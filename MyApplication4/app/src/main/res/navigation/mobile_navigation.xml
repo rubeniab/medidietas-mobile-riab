@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.myapplication4.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+
+    <!--Consultar Perfil-->
+    <fragment
+        android:id="@+id/nav_consPerfil"
+        android:name="com.example.myapplication4.ui.perfil.ConsultarFragment"
+        android:label="@string/menu_consPerfil"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_registrarUsuario"
+        android:name="com.example.myapplication4.ui.slideshow.SlideshowFragment"
+        android:label="@string/menu_registrarusuario"
+        tools:layout="@layout/activity_registrar_usuario" />
+
+    <fragment
+        android:id="@+id/nav_registrarConsumo"
+        android:name="com.example.myapplication4.ui.RegistrarConsumo.RegistrarConsumoFragment"
+        android:label="@string/menu_consumo"
+        tools:layout="@layout/activity_registrar_consumo" />
+
+</navigation>

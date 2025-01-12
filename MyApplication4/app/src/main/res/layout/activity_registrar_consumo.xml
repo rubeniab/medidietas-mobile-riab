@@ -18,56 +18,80 @@
         android:background="@drawable/edittext_background"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Tabla para mostrar los consumos -->
-    <TableLayout
-        android:id="@+id/tableLayout"
+    <!-- ScrollView para permitir el desplazamiento vertical -->
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:stretchColumns="1"
-        android:paddingTop="16dp"
-        android:background="#ffffff"
-        android:elevation="4dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp">
+        android:layout_height="wrap_content">
 
-        <!-- Fila de encabezado -->
-        <TableRow
-            android:background="#4CAF51"
-            android:layout_gravity="center"
-            android:padding="8dp">
+        <!-- HorizontalScrollView para permitir el desplazamiento horizontal -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Contenedor para la tabla y el espaciador -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nombre"
-                android:textColor="#ffffff"
-                android:padding="8dp"
-                android:textStyle="bold"/>
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:text="Ración"
-                android:textColor="#ffffff"
-                android:textStyle="bold" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Calorías"
-                android:textColor="#ffffff"
-                android:padding="8dp"
-                android:textStyle="bold"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Categoría"
-                android:textColor="#ffffff"
-                android:padding="8dp"
-                android:textStyle="bold"/>
-        </TableRow>
+                <!-- Tabla para mostrar los consumos -->
+                <TableLayout
+                    android:id="@+id/tableLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:stretchColumns="1"
+                    android:paddingTop="16dp"
+                    android:background="#ffffff"
+                    android:elevation="4dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="16dp">
 
-        <!-- Aquí se agregarán las filas dinámicamente -->
+                    <!-- Fila de encabezado -->
+                    <TableRow
+                        android:background="#4CAF51"
+                        android:layout_gravity="center"
+                        android:padding="8dp">
 
-    </TableLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Nombre"
+                            android:textColor="#ffffff"
+                            android:padding="8dp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="8dp"
+                            android:text="Ración"
+                            android:textColor="#ffffff"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Calorías"
+                            android:textColor="#ffffff"
+                            android:padding="8dp"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Categoría"
+                            android:textColor="#ffffff"
+                            android:padding="8dp"
+                            android:textStyle="bold"/>
+                    </TableRow>
+
+                    <!-- Aquí se agregarán las filas dinámicamente -->
+
+                </TableLayout>
+
+                <!-- Espaciador para agregar margen en la parte inferior -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp" />
+            </LinearLayout>
+        </ScrollView>
+    </HorizontalScrollView>
 </LinearLayout>

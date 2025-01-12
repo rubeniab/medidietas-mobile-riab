@@ -6,7 +6,9 @@ import android.util.Log;
 import com.example.myapplication4.ApiService;
 import com.example.myapplication4.ui.Utilidades.GestorToken;
 import com.example.myapplication4.ui.modelos.Alimento;
+import com.example.myapplication4.ui.modelos.Categoria;
 import com.example.myapplication4.ui.modelos.Comida;
+import com.example.myapplication4.ui.modelos.UnidadMedida;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -73,7 +75,7 @@ public class ConsumoDAO {
         HashMap<String, Object> respuesta = new HashMap<>();
         respuesta.put("error", true);
         try {
-            String token = GestorToken.TOKEN; // Obtener el token de alguna clase de gestión de tokens
+            String token = GestorToken.TOKEN;
             if (token == null || token.isEmpty()) {
                 throw new Exception("Token no válido");
             }
@@ -116,6 +118,84 @@ public class ConsumoDAO {
         } catch (Exception e) {
             respuesta.put("mensaje", "Error: " + e.getMessage());
             Log.e("ComidaError", e.getMessage(), e);
+        }
+        return respuesta;
+    }
+
+    public static HashMap<String, Object> obtenerUnidadesMedida(Context context) {
+        HashMap<String, Object> respuesta = new HashMap<>();
+        respuesta.put("error", true);
+        try {
+            String token = GestorToken.TOKEN;
+            if (token == null || token.isEmpty()) {
+                throw new Exception("Token no válido");
+            }
+
+            Call<JsonArray> call = ApiService.getService().obtenerUnidadesMedida(token);
+            Response<JsonArray> response = call.execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                JsonArray unidadesMedidaJson = response.body();
+                List<UnidadMedida> unidadesMedida = new ArrayList<>();
+
+                for (int i = 0; i < unidadesMedidaJson.size(); i++) {
+                    JsonObject jsonObject = unidadesMedidaJson.get(i).getAsJsonObject();
+                    UnidadMedida unidadMedida = new UnidadMedida(
+                            jsonObject.get("id").getAsInt(),
+                            jsonObject.get("nombre").getAsString()
+                    );
+                    unidadesMedida.add(unidadMedida);
+                }
+
+                respuesta.put("error", false);
+                respuesta.put("objeto", unidadesMedida);
+
+            } else {
+                String errorBody = response.errorBody() != null ? response.errorBody().string() : "Cuerpo de error vacío";
+                respuesta.put("mensaje", "Error al obtener las unidades de medida. Código de respuesta: " + response.code() + ", Cuerpo de error: " + errorBody);
+            }
+        } catch (Exception e) {
+            respuesta.put("mensaje", "Error: " + e.getMessage());
+            Log.e("UnidadMedidaError", e.getMessage(), e);
+        }
+        return respuesta;
+    }
+
+    public static HashMap<String, Object> obtenerCategorias(Context context) {
+        HashMap<String, Object> respuesta = new HashMap<>();
+        respuesta.put("error", true);
+        try {
+            String token = GestorToken.TOKEN; // Obtener el token de alguna clase de gestión de tokens
+            if (token == null || token.isEmpty()) {
+                throw new Exception("Token no válido");
+            }
+
+            Call<JsonArray> call = ApiService.getService().obtenerCategorias(token);
+            Response<JsonArray> response = call.execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                JsonArray categoriasJson = response.body();
+                List<Categoria> categorias = new ArrayList<>();
+
+                for (int i = 0; i < categoriasJson.size(); i++) {
+                    JsonObject jsonObject = categoriasJson.get(i).getAsJsonObject();
+                    Categoria categoria = new Categoria(
+                            jsonObject.get("id").getAsInt(),
+                            jsonObject.get("nombre").getAsString()
+                    );
+                    categorias.add(categoria);
+                }
+
+                respuesta.put("error", false);
+                respuesta.put("objeto", categorias);
+
+            } else {
+                String errorBody = response.errorBody() != null ? response.errorBody().string() : "Cuerpo de error vacío";
+                respuesta.put("mensaje", "Error al obtener las categorías. Código de respuesta: " + response.code() + ", Cuerpo de error: " + errorBody);
+            }
+        } catch (Exception e) {
+            respuesta.put("mensaje", "Error: " + e.getMessage());
+            Log.e("CategoriaError", e.getMessage(), e);
         }
         return respuesta;
     }

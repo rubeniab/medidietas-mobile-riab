@@ -5,6 +5,7 @@ import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 
 import com.example.myapplication4.ui.perfil.Usuario;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import okhttp3.ResponseBody;
@@ -36,6 +37,12 @@ public class ApiService {
 
         @GET("api/medidietas/usuarios/{nombre_usuario}")
         Call<Usuario> obtenerUsuarioPorNombre(@Path("nombre_usuario") String nombreUsuario, @Header("Authorization") String token);
+
+        @GET("api/medidietas/alimentos")
+        Call<JsonArray> obtenerAlimentos(@Header("x-token") String token);
+
+        @GET("api/medidietas/comidas")
+        Call<JsonArray> obtenerComidas(@Header("x-token") String token);
     }
 
     // Singleton para Retrofit

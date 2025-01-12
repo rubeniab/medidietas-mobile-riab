@@ -15,8 +15,12 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication4.R;
+import com.example.myapplication4.ui.daos.ConsumoDAO;
+import com.example.myapplication4.ui.modelos.Alimento;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class RegistrarConsumoFragment extends Fragment {
 
@@ -38,6 +42,17 @@ public class RegistrarConsumoFragment extends Fragment {
         tableLayout = view.findViewById(R.id.tableLayout);
         searchBar = view.findViewById(R.id.search_bar);
 
+        new Thread(() -> {
+            HashMap<String, Object> respuesta = ConsumoDAO.obtenerAlimentos(getContext());
+            if (!(boolean) respuesta.get("error")) {
+                List<Alimento> alimentos = (List<Alimento>) respuesta.get("objeto");
+                for (Alimento alimento : alimentos) {
+                    System.out.println(alimento.getNombre());
+                }
+            } else {
+                System.out.println("Error: " + respuesta.get("mensaje"));
+            }
+        }).start();
 
         cargarTabla(datos);
 

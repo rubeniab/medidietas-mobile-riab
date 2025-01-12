@@ -5,6 +5,7 @@ import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 
 import com.example.myapplication4.ui.perfil.Usuario;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import okhttp3.ResponseBody;
@@ -20,7 +21,7 @@ import retrofit2.http.Path;
 
 public class ApiService {
 
-    private static final String BASE_URL = "http://10.0.2.2:8086/";
+    private static final String BASE_URL = "http://10.0.2.2:8081/";
 
     // Interfaz para las llamadas a la API
     public interface Service {
@@ -36,6 +37,9 @@ public class ApiService {
 
         @GET("api/medidietas/usuarios/{nombre_usuario}")
         Call<Usuario> obtenerUsuarioPorNombre(@Path("nombre_usuario") String nombreUsuario, @Header("Authorization") String token);
+
+        @GET("api/medidietas/alimentos")
+        Call<JsonArray> obtenerAlimentos(@Header("x-token") String token);
     }
 
     // Singleton para Retrofit

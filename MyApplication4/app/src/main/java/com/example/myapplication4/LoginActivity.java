@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication4.ui.Utilidades.GestorToken;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.JsonObject;
 
@@ -103,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 String token = response.headers().get("x-token");
                 if (token != null) {
-                    TokenManager.saveToken(context, token);
+                    GestorToken.TOKEN = token;
                     Log.d("TokenLog", "Token recibido: " + token);
                 }
 

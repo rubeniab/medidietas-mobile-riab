@@ -29,7 +29,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/black" />
 
-            <EditText
+            <!--EditText
                 android:id="@+id/search_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
                 android:padding="12dp"
                 android:textColor="#333"
                 android:background="@drawable/edittext_background"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="16dp"/-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -60,7 +60,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/nombre"
+                        android:id="@+id/nombreInfoTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
@@ -82,7 +82,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/nombre_usuario"
+                        android:id="@+id/nombre_usuarioInfoTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
@@ -104,7 +104,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/correo"
+                        android:id="@+id/correoInfoTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
@@ -126,7 +126,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/calorias"
+                        android:id="@+id/caloriasInfoTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
@@ -148,7 +148,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/carbohidratos"
+                        android:id="@+id/carbohidratosInfoTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
@@ -168,7 +168,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/grasas"
+                        android:id="@+id/grasasInfoTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
@@ -188,7 +188,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/proteinas"
+                        android:id="@+id/proteinasInfoTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"

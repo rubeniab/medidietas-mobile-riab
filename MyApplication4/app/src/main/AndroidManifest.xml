@@ -26,19 +26,19 @@
         <activity
             android:name=".modificarPerfil"
             android:exported="false" />
-        <activity
+        <!--activity
             android:name=".DialogFragment"
             android:exported="false"
-            android:theme="@style/Theme.MyApplication4" />
-        <activity
+            android:theme="@style/Theme.MyApplication4" /-->
+        <!--activity
             android:name=".RegistrarConsumo"
-            android:exported="false" />
-        <activity
+            android:exported="false" /-->
+        <!--activity
             android:name=".fragment_logout"
-            android:exported="false" />
-        <activity
+            android:exported="false" /-->
+        <!--activity
             android:name=".ConsultarPerfilActivity"
-            android:exported="false" />
+            android:exported="false" /-->
         <activity
             android:name=".RegistrarObjetivos"
             android:exported="false" />

@@ -207,7 +207,7 @@ public class RegistrarObjetivos extends AppCompatActivity {
     }
 
     private void registrarUsuario(RegistroUsuario registroUsuario) {
-        ApiService apiService = RetrofitClient.getInstance().create(ApiService.class);
+        ApiService.Service apiService = ApiService.getService();
         Call<Void> call = apiService.registrarUsuario(registroUsuario);
 
         call.enqueue(new Callback<Void>() {

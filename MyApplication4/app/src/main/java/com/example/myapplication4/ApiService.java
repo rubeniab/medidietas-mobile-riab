@@ -1,25 +1,58 @@
 package com.example.myapplication4;
 
+import androidx.annotation.OptIn;
+import androidx.media3.common.util.Log;
+import androidx.media3.common.util.UnstableApi;
+
 import com.example.myapplication4.ui.perfil.Usuario;
+import com.google.gson.JsonObject;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
-import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-public interface ApiService {
-    @POST("api/medidietas/usuarios/login")
-    Call<LoginResponse> login(@Body LoginRequest loginRequest);
+public class ApiService {
 
-    @POST("api/medidietas/usuarios/logout")
-    Call<ResponseBody> logout(@Header("x-token") String token);
+    private static final String BASE_URL = "http://10.0.2.2:8086/";
 
-    @GET("api/medidietas/usuarios/nombre_usuario")
-    Call<Usuario> obtenerUsuarioPorNombre(@Path("nombreUsuario") String nombreUsuario, @Header("Authorization") String token);
+    // Interfaz para las llamadas a la API
+    public interface Service {
+        @Headers("Content-Type: application/json")
+        @POST("api/medidietas/usuarios/login")
+        Call<JsonObject> logIn(@Body JsonObject body);
 
-    @POST("api/medidietas/usuarios/signup")
-    Call<Void> registrarUsuario(@Body RegistroUsuario registroUsuario);
+        @POST("api/medidietas/usuarios/logout")
+        Call<ResponseBody> logOut(@Header("Authorization") String token);
+
+        @POST("api/medidietas/usuarios/signup")
+        Call<Void> registrarUsuario(@Body RegistroUsuario registroUsuario);
+
+        @GET("api/medidietas/usuarios/{nombre_usuario}")
+        Call<Usuario> obtenerUsuarioPorNombre(@Path("nombre_usuario") String nombreUsuario, @Header("Authorization") String token);
+    }
+
+    // Singleton para Retrofit
+    private static Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+    // Crear una instancia de la interfaz
+    public static Service getService() {
+        return retrofit.create(Service.class);
+    }
+
+    // Método auxiliar para los logs
+    @OptIn(markerClass = UnstableApi.class)
+    public static void logApiResponse(int responseCode, String responseBody) {
+        Log.d("API Response", "Response code: " + responseCode);
+        Log.d("API Response", "Body: " + responseBody);
+    }
 }

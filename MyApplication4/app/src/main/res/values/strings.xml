@@ -36,7 +36,7 @@
     <string name="fechanacimiento">Fecha de nacimiento</string>
     <string name="fotografia">Sube una fotografìa</string>
 
-    <string name="registrarObjetivos"><b>REGISTRAR OBJETIVOS</b></string>
+    <string name="registrar"><b>REGISTRAR INFORMACIÓN</b></string>
     <string name="objetivos">Objetivos</string>
     <string name="calorias">Calorias</string>
     <string name="carbohidratos">Carbohidratos</string>

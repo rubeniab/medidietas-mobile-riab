@@ -77,13 +77,13 @@
 
         <!-- Botones -->
 
-        <Button
+        <!--Button
             android:id="@+id/btnObjetivos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Ir a Registrar objetivos"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="20dp"/-->
 
         <Button
             android:id="@+id/btnSesion"
@@ -103,8 +103,6 @@
             android:textColor="#000"
             android:layout_margin="5dp"
             android:layout_gravity="right"/>
-
-
 
     </LinearLayout>
 

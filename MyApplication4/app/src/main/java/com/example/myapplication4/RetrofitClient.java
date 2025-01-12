@@ -16,4 +16,8 @@ public class RetrofitClient {
         }
         return retrofit;
     }
+
+    public static ApiService.Service getService() {
+        return retrofit.create(ApiService.Service.class);
+    }
 }

@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace = "com.example.myapplication4"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.myapplication4"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -50,6 +50,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")       // Retrofit core
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")   // Gson converter (si usas JSON)
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation(libs.media3.common)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,10 +20,19 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myapplication4.LoginActivity;
 import com.example.myapplication4.ApiService;
+import com.example.myapplication4.R;
 import com.example.myapplication4.TokenManager;
 import com.example.myapplication4.databinding.FragmentHomeBinding;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -48,7 +58,21 @@ public class HomeFragment extends Fragment {
         // Configurar botón de logout
         Button logoutButton = binding.btnLogout; // Asegúrate de que el ID coincide con el XML
         logoutButton.setOnClickListener(v -> performLogOut());
+
+        PieChart pieChart1 = binding.pieChart1;
+        int totalCalorias = 5600;
+        int caloriasConsumidas = 2370;
+        int caloriasRestantes = totalCalorias - caloriasConsumidas;
+        List<PieEntry> entries = new ArrayList<>();
+        entries.add(new PieEntry(caloriasRestantes, "Calorias restantes"));
+        entries.add(new PieEntry(caloriasConsumidas, "Calorias consumidas"));
+        PieDataSet set = new PieDataSet(entries, "Calorias");
+        set.setColors(ColorTemplate.MATERIAL_COLORS);
+        PieData data = new PieData(set);
+        pieChart1.setData(data);
+        pieChart1.invalidate();
         return root;
+
     }
 
     public void performLogOut() {
@@ -171,4 +195,5 @@ public class HomeFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
 }

@@ -40,6 +40,9 @@ public class ApiService {
 
         @GET("api/medidietas/alimentos")
         Call<JsonArray> obtenerAlimentos(@Header("x-token") String token);
+
+        @GET("api/medidietas/comidas")
+        Call<JsonArray> obtenerComidas(@Header("x-token") String token);
     }
 
     // Singleton para Retrofit

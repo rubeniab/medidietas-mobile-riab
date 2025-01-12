@@ -17,8 +17,9 @@ import androidx.fragment.app.Fragment;
 import com.example.myapplication4.R;
 import com.example.myapplication4.ui.daos.ConsumoDAO;
 import com.example.myapplication4.ui.modelos.Alimento;
+import com.example.myapplication4.ui.modelos.Comida;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,14 +27,7 @@ public class RegistrarConsumoFragment extends Fragment {
 
     private TableLayout tableLayout;
     private EditText searchBar;
-
-    private String[][] datos = {
-            {"Manzana", "1 unidad", "52", "Fruta"},
-            {"Banana", "1 unidad", "89", "Fruta"},
-            {"Arroz", "1 taza", "130", "Cereal"},
-            {"Pollo", "1 pieza", "165", "Proteína"},
-            {"Leche", "1 vaso", "42", "Lácteo"}
-    };
+    private List<String[]> datos = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,19 +37,41 @@ public class RegistrarConsumoFragment extends Fragment {
         searchBar = view.findViewById(R.id.search_bar);
 
         new Thread(() -> {
-            HashMap<String, Object> respuesta = ConsumoDAO.obtenerAlimentos(getContext());
-            if (!(boolean) respuesta.get("error")) {
-                List<Alimento> alimentos = (List<Alimento>) respuesta.get("objeto");
+            // Obtener alimentos
+            HashMap<String, Object> respuestaAlimentos = ConsumoDAO.obtenerAlimentos(getContext());
+            if (!(boolean) respuestaAlimentos.get("error")) {
+                List<Alimento> alimentos = (List<Alimento>) respuestaAlimentos.get("objeto");
                 for (Alimento alimento : alimentos) {
-                    System.out.println(alimento.getNombre());
+                    datos.add(new String[]{
+                            alimento.getNombre(),
+                            alimento.getTamanoRacion() + " " + alimento.getIdUnidadMedida(),
+                            String.valueOf(alimento.getCalorias()),
+                            "Alimento"
+                    });
                 }
             } else {
-                System.out.println("Error: " + respuesta.get("mensaje"));
+                System.out.println("Error: " + respuestaAlimentos.get("mensaje"));
             }
+
+            // Obtener comidas
+            HashMap<String, Object> respuestaComidas = ConsumoDAO.obtenerComidas(getContext());
+            if (!(boolean) respuestaComidas.get("error")) {
+                List<Comida> comidas = (List<Comida>) respuestaComidas.get("objeto");
+                for (Comida comida : comidas) {
+                    datos.add(new String[]{
+                            comida.getNombre(),
+                            "1 unidad",
+                            "indefinido",
+                            "Comida"
+                    });
+                }
+            } else {
+                System.out.println("Error: " + respuestaComidas.get("mensaje"));
+            }
+
+            // Actualizar la UI en el hilo principal
+            getActivity().runOnUiThread(() -> cargarTabla(datos));
         }).start();
-
-        cargarTabla(datos);
-
 
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -78,9 +94,8 @@ public class RegistrarConsumoFragment extends Fragment {
         return view;
     }
 
-    private void cargarTabla(String[][] datos) {
+    private void cargarTabla(List<String[]> datos) {
         tableLayout.removeAllViews();
-
 
         TableRow headerRow = new TableRow(getContext());
         for (String encabezado : new String[]{"Nombre", "Ración", "Calorías", "Categoría"}) {
@@ -91,7 +106,6 @@ public class RegistrarConsumoFragment extends Fragment {
         }
         tableLayout.addView(headerRow);
 
-
         for (String[] fila : datos) {
             TableRow row = new TableRow(getContext());
             for (String dato : fila) {
@@ -101,7 +115,6 @@ public class RegistrarConsumoFragment extends Fragment {
                 row.addView(textView);
             }
 
-
             row.setOnClickListener(v -> showResumenDialog(fila));
 
             tableLayout.addView(row);
@@ -109,9 +122,12 @@ public class RegistrarConsumoFragment extends Fragment {
     }
 
     private void filtrarTabla(String query) {
-        String[][] datosFiltrados = Arrays.stream(datos)
-                .filter(fila -> fila[0].toLowerCase().contains(query.toLowerCase()))
-                .toArray(String[][]::new);
+        List<String[]> datosFiltrados = new ArrayList<>();
+        for (String[] fila : datos) {
+            if (fila[0].toLowerCase().contains(query.toLowerCase())) {
+                datosFiltrados.add(fila);
+            }
+        }
         cargarTabla(datosFiltrados);
     }
 

@@ -4,16 +4,16 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.myapplication4.ApiService;
-import com.example.myapplication4.Consumo;
 import com.example.myapplication4.ui.Utilidades.GestorToken;
 import com.example.myapplication4.ui.modelos.Alimento;
+import com.example.myapplication4.ui.modelos.Categoria;
 import com.example.myapplication4.ui.modelos.Comida;
-import com.example.myapplication4.ui.modelos.ConsumoDiario;
+import com.example.myapplication4.ui.modelos.Momento;
+import com.example.myapplication4.ui.modelos.UnidadMedida;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -76,7 +76,7 @@ public class ConsumoDAO {
         HashMap<String, Object> respuesta = new HashMap<>();
         respuesta.put("error", true);
         try {
-            String token = GestorToken.TOKEN; // Obtener el token de alguna clase de gestión de tokens
+            String token = GestorToken.TOKEN;
             if (token == null || token.isEmpty()) {
                 throw new Exception("Token no válido");
             }
@@ -95,17 +95,12 @@ public class ConsumoDAO {
                             jsonObject.get("nombre").getAsString(),
                             jsonObject.get("preparacion_video").getAsString(),
                             jsonObject.get("receta").getAsString(),
-                            jsonObject.get("estado").getAsBoolean()
+                            jsonObject.get("estado").getAsBoolean(),
+                            jsonObject.get("calorias").getAsDouble(),
+                            jsonObject.get("carbohidratos").getAsDouble(),
+                            jsonObject.get("grasas").getAsDouble(),
+                            jsonObject.get("proteinas").getAsDouble()
                     );
-                    // Si hay alimentos asociados, puedes procesarlos aquí
-                    if (jsonObject.has("alimentos")) {
-                        JsonObject alimentosJson = jsonObject.get("alimentos").getAsJsonObject();
-                        HashMap<String, Double> alimentos = new HashMap<>();
-                        for (String key : alimentosJson.keySet()) {
-                            alimentos.put(key, alimentosJson.get(key).getAsDouble());
-                        }
-                        comida.setAlimentos(alimentos);
-                    }
                     comidas.add(comida);
                 }
 
@@ -123,7 +118,7 @@ public class ConsumoDAO {
         return respuesta;
     }
 
-    public static HashMap<String, Object> consultarConsumosHoy(String nombreUsuario, Date fecha) {
+    public static HashMap<String, Object> obtenerUnidadesMedida(Context context) {
         HashMap<String, Object> respuesta = new HashMap<>();
         respuesta.put("error", true);
         try {
@@ -132,44 +127,112 @@ public class ConsumoDAO {
                 throw new Exception("Token no válido");
             }
 
-            JsonObject fechaJson = new JsonObject();
-            fechaJson.addProperty("fecha", fecha.toString());
-
-            Call<JsonArray> call = ApiService.getService().obtenerConsumos(nombreUsuario, token, fechaJson);
+            Call<JsonArray> call = ApiService.getService().obtenerUnidadesMedida(token);
             Response<JsonArray> response = call.execute();
 
             if (response.isSuccessful() && response.body() != null) {
-                JsonArray consumosJson = response.body();
-                List<ConsumoDiario> consumosDia = new ArrayList<>();
+                JsonArray unidadesMedidaJson = response.body();
+                List<UnidadMedida> unidadesMedida = new ArrayList<>();
 
-                for (int i = 0; i < consumosJson.size(); i++) {
-                    JsonObject jsonObject = consumosJson.get(i).getAsJsonObject();
-                    ConsumoDiario consumo = new ConsumoDiario(
-                            jsonObject.get("nombre").getAsString(),
-                            jsonObject.get("tamano_racion").getAsString(),
-                            jsonObject.get("calorias").getAsDouble(),
-                            jsonObject.get("carbohidratos").getAsDouble(),
-                            jsonObject.get("grasas").getAsDouble(),
-                            jsonObject.get("proteinas").getAsDouble(),
-                            jsonObject.get("cantidad").getAsDouble(),
-                            jsonObject.get("momento").getAsString()
+                for (int i = 0; i < unidadesMedidaJson.size(); i++) {
+                    JsonObject jsonObject = unidadesMedidaJson.get(i).getAsJsonObject();
+                    UnidadMedida unidadMedida = new UnidadMedida(
+                            jsonObject.get("id").getAsInt(),
+                            jsonObject.get("nombre").getAsString()
                     );
-                    consumosDia.add(consumo);
+                    unidadesMedida.add(unidadMedida);
                 }
 
                 respuesta.put("error", false);
-                respuesta.put("objeto", consumosDia);
+                respuesta.put("objeto", unidadesMedida);
 
             } else {
-                String errorBody = response.errorBody() != null ?
-                        response.errorBody().string() : "Cuerpo de error vacío";
-                respuesta.put("mensaje", "Error al obtener los consumos. Código de respuesta: "
-                        + response.code() + ", Cuerpo de error: " + errorBody);
+                String errorBody = response.errorBody() != null ? response.errorBody().string() : "Cuerpo de error vacío";
+                respuesta.put("mensaje", "Error al obtener las unidades de medida. Código de respuesta: " + response.code() + ", Cuerpo de error: " + errorBody);
             }
         } catch (Exception e) {
             respuesta.put("mensaje", "Error: " + e.getMessage());
-            Log.e("ConsumoError", e.getMessage(), e);
+            Log.e("UnidadMedidaError", e.getMessage(), e);
         }
         return respuesta;
     }
+
+    public static HashMap<String, Object> obtenerCategorias(Context context) {
+        HashMap<String, Object> respuesta = new HashMap<>();
+        respuesta.put("error", true);
+        try {
+            String token = GestorToken.TOKEN; // Obtener el token de alguna clase de gestión de tokens
+            if (token == null || token.isEmpty()) {
+                throw new Exception("Token no válido");
+            }
+
+            Call<JsonArray> call = ApiService.getService().obtenerCategorias(token);
+            Response<JsonArray> response = call.execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                JsonArray categoriasJson = response.body();
+                List<Categoria> categorias = new ArrayList<>();
+
+                for (int i = 0; i < categoriasJson.size(); i++) {
+                    JsonObject jsonObject = categoriasJson.get(i).getAsJsonObject();
+                    Categoria categoria = new Categoria(
+                            jsonObject.get("id").getAsInt(),
+                            jsonObject.get("nombre").getAsString()
+                    );
+                    categorias.add(categoria);
+                }
+
+                respuesta.put("error", false);
+                respuesta.put("objeto", categorias);
+
+            } else {
+                String errorBody = response.errorBody() != null ? response.errorBody().string() : "Cuerpo de error vacío";
+                respuesta.put("mensaje", "Error al obtener las categorías. Código de respuesta: " + response.code() + ", Cuerpo de error: " + errorBody);
+            }
+        } catch (Exception e) {
+            respuesta.put("mensaje", "Error: " + e.getMessage());
+            Log.e("CategoriaError", e.getMessage(), e);
+        }
+        return respuesta;
+    }
+
+    public static HashMap<String, Object> obtenerMomentos(Context context) {
+        HashMap<String, Object> respuesta = new HashMap<>();
+        respuesta.put("error", true);
+        try {
+            String token = GestorToken.TOKEN; // Obtener el token de alguna clase de gestión de tokens
+            if (token == null || token.isEmpty()) {
+                throw new Exception("Token no válido");
+            }
+
+            Call<JsonArray> call = ApiService.getService().obtenerMomentos(token);
+            Response<JsonArray> response = call.execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                JsonArray momentosJson = response.body();
+                List<Momento> momentos = new ArrayList<>();
+
+                for (int i = 0; i < momentosJson.size(); i++) {
+                    JsonObject jsonObject = momentosJson.get(i).getAsJsonObject();
+                    Momento momento = new Momento(
+                            jsonObject.get("id").getAsInt(),
+                            jsonObject.get("nombre").getAsString()
+                    );
+                    momentos.add(momento);
+                }
+
+                respuesta.put("error", false);
+                respuesta.put("objeto", momentos);
+
+            } else {
+                String errorBody = response.errorBody() != null ? response.errorBody().string() : "Cuerpo de error vacío";
+                respuesta.put("mensaje", "Error al obtener los momentos. Código de respuesta: " + response.code() + ", Cuerpo de error: " + errorBody);
+            }
+        } catch (Exception e) {
+            respuesta.put("mensaje", "Error: " + e.getMessage());
+            Log.e("MomentoError", e.getMessage(), e);
+        }
+        return respuesta;
+    }
+
 }

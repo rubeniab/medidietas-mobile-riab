@@ -3,6 +3,8 @@ package com.example.myapplication4;
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
+
+import com.example.myapplication4.ui.perfil.Usuario;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -11,7 +13,6 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
-import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -20,7 +21,7 @@ import retrofit2.http.Path;
 
 public class ApiService {
 
-    private static final String BASE_URL = "http://192.168.0.253:8081/";
+    private static final String BASE_URL = "http://10.0.2.2:8086/";
 
     // Interfaz para las llamadas a la API
     public interface Service {
@@ -35,7 +36,7 @@ public class ApiService {
         Call<Void> registrarUsuario(@Body RegistroUsuario registroUsuario);
 
         @GET("api/medidietas/usuarios/{nombre_usuario}")
-        Call<JsonObject> obtenerUsuarioPorNombre(@Path("nombre_usuario") String nombreUsuario, @Header("Authorization") String token);
+        Call<Usuario> obtenerUsuarioPorNombre(@Path("nombre_usuario") String nombreUsuario, @Header("Authorization") String token);
 
         @GET("api/medidietas/alimentos")
         Call<JsonArray> obtenerAlimentos(@Header("x-token") String token);
@@ -43,9 +44,14 @@ public class ApiService {
         @GET("api/medidietas/comidas")
         Call<JsonArray> obtenerComidas(@Header("x-token") String token);
 
-        //@GET("api/medidietas/consumos/{nombre_usuario}")
-        @HTTP(method = "GET", path = "api/medidietas/consumos/{nombre_usuario}", hasBody = true)
-        Call<JsonArray> obtenerConsumos(@Path("nombre_usuario") String nombreUsuario, @Header("Authorization") String token, @Body JsonObject fecha);
+        @GET("api/medidietas/alimentos/unidades-medida")
+        Call<JsonArray> obtenerUnidadesMedida(@Header("x-token") String token);
+
+        @GET("api/medidietas/alimentos/categorias")
+        Call<JsonArray> obtenerCategorias(@Header("x-token") String token);
+
+        @GET("api/medidietas/momentos")
+        Call<JsonArray> obtenerMomentos(@Header("x-token") String token);
     }
 
     // Singleton para Retrofit

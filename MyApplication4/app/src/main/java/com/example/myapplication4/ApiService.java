@@ -42,7 +42,7 @@ public class ApiService {
         Call<JsonObject> obtenerUsuarioPorNombre(@Path("nombre_usuario") String nombreUsuario, @Header("x-token") String token);
 
         @PUT("api/medidietas/usuarios/{nombre_usuario}")
-        Call<JsonObject> actualizarUsuario(@Header("Authorization") String token, @Body JsonObject usuario);
+        Call<JsonObject> actualizarUsuario(@Path("nombre_usuario") @Header("x-token") String token, @Body JsonObject usuario);
 
         @GET("api/medidietas/alimentos")
         Call<JsonArray> obtenerAlimentos(@Header("x-token") String token);

@@ -126,11 +126,16 @@ public class modificarPerfil extends AppCompatActivity {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(modificarPerfil.this, "Perfil actualizado con éxito", Toast.LENGTH_SHORT).show();
-                    // Navegar de regreso a la pantalla de consulta
-                    Intent intent = new Intent(modificarPerfil.this, ConsultarFragment.class);
+                    Intent intent = new Intent(modificarPerfil.this, HomeActivity.class);
                     startActivity(intent);
                 } else {
+                    Log.e("API_ERROR", "Error al actualizar el perfil. Código de estado: " + response.code());
                     Toast.makeText(modificarPerfil.this, "Error al actualizar el perfil", Toast.LENGTH_SHORT).show();
+                    try{
+                        Log.e("API_ERROR", "Cuerpo de la respuesta: " + response.errorBody().string());
+                    } catch (Exception e){
+                        Log.e("API_ERROR", "Error al leer el cuerpo de la respuesta: " + e.getMessage());
+                    }
                 }
             }
 

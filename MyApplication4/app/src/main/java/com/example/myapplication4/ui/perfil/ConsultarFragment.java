@@ -41,10 +41,10 @@ public class ConsultarFragment extends Fragment {
         correoInfoTextView = rootView.findViewById(R.id.correoInfoTextView);
         apellido_paternoTextView = rootView.findViewById(R.id.apellido_paternoTextView);
         apellido_maternoTextView = rootView.findViewById(R.id.apellido_maternoTextView);
-        caloriasInfoTextView = rootView.findViewById(R.id.caloriasInfoTextView);
-        carbohidratosInfoTextView = rootView.findViewById(R.id.carbohidratosInfoTextView);
-        grasasInfoTextView = rootView.findViewById(R.id.grasasInfoTextView);
-        proteinasInfoTextView = rootView.findViewById(R.id.proteinasInfoTextView);
+        //caloriasInfoTextView = rootView.findViewById(R.id.caloriasInfoTextView);
+        //carbohidratosInfoTextView = rootView.findViewById(R.id.carbohidratosInfoTextView);
+        //grasasInfoTextView = rootView.findViewById(R.id.grasasInfoTextView);
+        //proteinasInfoTextView = rootView.findViewById(R.id.proteinasInfoTextView);
         btnModificarPerfil = rootView.findViewById(R.id.btnModificarPerfil);
 
         String nombre = Constantes.NOMBRE;

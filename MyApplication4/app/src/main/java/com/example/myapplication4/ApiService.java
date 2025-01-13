@@ -52,6 +52,9 @@ public class ApiService {
 
         @GET("api/medidietas/momentos")
         Call<JsonArray> obtenerMomentos(@Header("x-token") String token);
+
+        @POST("api/medidietas/consumos")
+        Call<JsonObject> registrarConsumo(@Header("x-token") String token, @Body JsonObject consumo);
     }
 
     // Singleton para Retrofit

@@ -8,6 +8,7 @@ import com.example.myapplication4.ui.Utilidades.GestorToken;
 import com.example.myapplication4.ui.modelos.Alimento;
 import com.example.myapplication4.ui.modelos.Categoria;
 import com.example.myapplication4.ui.modelos.Comida;
+import com.example.myapplication4.ui.modelos.Consumo;
 import com.example.myapplication4.ui.modelos.Momento;
 import com.example.myapplication4.ui.modelos.UnidadMedida;
 import com.google.gson.JsonArray;
@@ -235,4 +236,44 @@ public class ConsumoDAO {
         return respuesta;
     }
 
+    public static HashMap<String, Object> registrarConsumo(Context context, Consumo consumo, boolean esComida) {
+        HashMap<String, Object> respuesta = new HashMap<>();
+        respuesta.put("error", true);
+        try {
+            String token = GestorToken.TOKEN; // Obtener el token de alguna clase de gestión de tokens
+            if (token == null || token.isEmpty()) {
+                throw new Exception("Token no válido");
+            }
+
+            // Crear el objeto JSON para el consumo
+            JsonObject consumoJson = new JsonObject();
+            consumoJson.addProperty("fecha", consumo.getFecha());
+            consumoJson.addProperty("cantidad", consumo.getCantidad());
+            consumoJson.addProperty("id_momento", consumo.getIdMomento());
+            consumoJson.addProperty("id_usuario_movil", consumo.getIdUsuarioMovil());
+
+            // Diferenciar entre alimento y comida
+            if (esComida) {
+                consumoJson.addProperty("id_comida", consumo.getIdConsumo());
+            } else {
+                consumoJson.addProperty("id_alimento", consumo.getIdConsumo());
+            }
+
+            // Llamar al servicio API para registrar el consumo
+            Call<JsonObject> call = ApiService.getService().registrarConsumo(token, consumoJson);
+            Response<JsonObject> response = call.execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                respuesta.put("error", false);
+                respuesta.put("mensaje", "Consumo registrado correctamente");
+            } else {
+                String errorBody = response.errorBody() != null ? response.errorBody().string() : "Cuerpo de error vacío";
+                respuesta.put("mensaje", "Error al registrar el consumo. Código de respuesta: " + response.code() + ", Cuerpo de error: " + errorBody);
+            }
+        } catch (Exception e) {
+            respuesta.put("mensaje", "Error: " + e.getMessage());
+            Log.e("ConsumoError", e.getMessage(), e);
+        }
+        return respuesta;
+    }
 }

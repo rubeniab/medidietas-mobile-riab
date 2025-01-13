@@ -21,12 +21,16 @@ import com.example.myapplication4.ui.daos.ConsumoDAO;
 import com.example.myapplication4.ui.modelos.Alimento;
 import com.example.myapplication4.ui.modelos.Categoria;
 import com.example.myapplication4.ui.modelos.Comida;
+import com.example.myapplication4.ui.modelos.Consumo;
 import com.example.myapplication4.ui.modelos.Momento;
 import com.example.myapplication4.ui.modelos.UnidadMedida;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class RegistrarConsumoFragment extends Fragment {
 
@@ -40,6 +44,7 @@ public class RegistrarConsumoFragment extends Fragment {
     private HashMap<Integer, String> unidadesMedidaMap = new HashMap<>();
     private double cantidadConsumo;
     private String momentoSeleccionado;
+    private int idMomentoSeleccionado;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -228,7 +233,25 @@ public class RegistrarConsumoFragment extends Fragment {
             if (!cantidadStr.isEmpty()) {
                 cantidadConsumo = Double.parseDouble(cantidadStr);
                 momentoSeleccionado = momentoSpinner.getSelectedItem().toString();
-                Toast.makeText(getContext(), "Cantidad agregada: " + cantidadConsumo + ", Momento: " + momentoSeleccionado, Toast.LENGTH_SHORT).show();
+                idMomentoSeleccionado = momentosList.get(momentoSpinner.getSelectedItemPosition()).getId();
+
+                // Obtener la fecha actual del sistema
+                String fechaActual = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+                // Crear el objeto Consumo
+                Consumo consumo = new Consumo(fechaActual, cantidadConsumo, idMomentoSeleccionado, alimento.getId(), 1);
+
+                // Registrar el consumo
+                new Thread(() -> {
+                    HashMap<String, Object> respuesta = ConsumoDAO.registrarConsumo(getContext(), consumo, false);
+                    getActivity().runOnUiThread(() -> {
+                        if (!(boolean) respuesta.get("error")) {
+                            Toast.makeText(getContext(), "Consumo registrado correctamente", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), "Error al registrar el consumo: " + respuesta.get("mensaje"), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }).start();
             } else {
                 Toast.makeText(getContext(), "Por favor, ingrese una cantidad", Toast.LENGTH_SHORT).show();
             }
@@ -272,7 +295,25 @@ public class RegistrarConsumoFragment extends Fragment {
             if (!cantidadStr.isEmpty()) {
                 cantidadConsumo = Double.parseDouble(cantidadStr);
                 momentoSeleccionado = momentoSpinner.getSelectedItem().toString();
-                Toast.makeText(getContext(), "Consumo agregado con éxito", Toast.LENGTH_SHORT).show();
+                idMomentoSeleccionado = momentosList.get(momentoSpinner.getSelectedItemPosition()).getId();
+
+                // Obtener la fecha actual del sistema
+                String fechaActual = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+                // Crear el objeto Consumo
+                Consumo consumo = new Consumo(fechaActual, cantidadConsumo, idMomentoSeleccionado, comida.getId(), 1);
+
+                // Registrar el consumo
+                new Thread(() -> {
+                    HashMap<String, Object> respuesta = ConsumoDAO.registrarConsumo(getContext(), consumo, true);
+                    getActivity().runOnUiThread(() -> {
+                        if (!(boolean) respuesta.get("error")) {
+                            Toast.makeText(getContext(), "Consumo registrado correctamente", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), "Error al registrar el consumo: " + respuesta.get("mensaje"), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }).start();
             } else {
                 Toast.makeText(getContext(), "Por favor, ingrese una cantidad", Toast.LENGTH_SHORT).show();
             }

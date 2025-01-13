@@ -1,6 +1,7 @@
-package com.example.myapplication4;
+package com.example.myapplication4.ui.modelos;
 
 public class UsuarioMovil {
+    private int id;
     private String nombre_usuario;
     private String nombre;
     private String apellido_paterno;
@@ -17,8 +18,16 @@ public class UsuarioMovil {
     private double grasas;
     private double proteinas;
 
+    public int getId() {
+        return id;
+    }
+
     public String getNombre_usuario() {
         return nombre_usuario;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setNombre_usuario(String nombre_usuario) {

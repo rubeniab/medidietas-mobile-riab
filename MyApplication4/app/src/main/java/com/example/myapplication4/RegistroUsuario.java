@@ -1,5 +1,7 @@
 package com.example.myapplication4;
 
+import com.example.myapplication4.ui.modelos.UsuarioMovil;
+
 public class RegistroUsuario {
     private UsuarioMovil usuarioMovil;
     private Objetivo objetivo;

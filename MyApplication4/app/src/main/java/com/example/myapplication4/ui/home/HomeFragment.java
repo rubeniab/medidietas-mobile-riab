@@ -37,9 +37,12 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -154,6 +157,8 @@ public class HomeFragment extends Fragment {
                 chartCalorias.getLegend().setEnabled(false);
                 chartCalorias.invalidate();
 
+                // Limpiar la lista de datos antes de agregar nuevos datos
+                datos.clear();
                 for(ConsumoDiario consumo : consumos) {
                     datos.add(new String[] {consumo.getNombre(), consumo.getTamano_racion(), String.valueOf(consumo.getCalorias()), String.valueOf(consumo.getCantidad()), consumo.getMomento() });
                 }
@@ -196,7 +201,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
     private void obtenerObjetivos(){
         HashMap<String, Object> respuestaObjetivos = UsuarioDAO.consultarUsuario("skywhite");
         Usuario usuario = (Usuario) respuestaObjetivos.get("objeto");
@@ -207,7 +211,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void obtenerConsumos(){
-        HashMap<String, Object> respuesta = ConsumoDAO.consultarConsumosHoy("skywhite", "2024-12-05");
+        // Obtener la fecha actual
+        String fechaActual = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().getTime());
+
+        HashMap<String, Object> respuesta = ConsumoDAO.consultarConsumosHoy("skywhite", fechaActual);
         if(respuesta.get("error").equals(true)){
             System.out.println(respuesta.get("mensaje"));
         }
@@ -215,6 +222,12 @@ public class HomeFragment extends Fragment {
     }
 
     private void calcularConsumos() {
+        // Reiniciar los valores antes de calcular
+        calConsumidas = 0;
+        carbsConsumidos = 0;
+        protesConsumidos = 0;
+        grasasConsumidas = 0;
+
         for(ConsumoDiario consumo : consumos) {
             calConsumidas += consumo.getCalorias() * consumo.getCantidad();
             carbsConsumidos += consumo.getCarbohidratos() * consumo.getCantidad();
@@ -328,7 +341,6 @@ public class HomeFragment extends Fragment {
             getActivity().finish();
         }
     }*/
-
 
 
 

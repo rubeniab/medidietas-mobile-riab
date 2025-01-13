@@ -50,6 +50,9 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     List<ConsumoDiario> consumos = new ArrayList<>();
+    double calTotales = 0;
+    double calConsumidas = 0;
+    double calRestantes = 0;
     double carbsTotales = 0;
     double carbsConsumidos = 0;
     double carbsRestantes = 0;
@@ -69,50 +72,116 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        obtenerObjetivos();
+        new Thread(() -> {
+            obtenerObjetivos();
+            obtenerConsumos();
+            calcularConsumos();
+            System.out.println("Consumos: " + consumos.get(0).getCarbohidratos());
 
-        //Obtener consumos
-        Calendar cal = new GregorianCalendar();
-        Date fechaHoy = cal.getTime();
-        System.out.println(fechaHoy);
-        HashMap<String, Object> respuesta = ConsumoDAO.consultarConsumosHoy("skywhite", fechaHoy);
-        consumos = (List<ConsumoDiario>) respuesta.get("objeto");
+            getActivity().runOnUiThread(() -> {
+                PieChart chartCarbohidratos = binding.carbohidratosChart;
+                List<PieEntry> carbohidratosEntries = new ArrayList<>();
+                carbohidratosEntries.add(new PieEntry((float) carbsRestantes, "Restante"));
+                carbohidratosEntries.add(new PieEntry((float) carbsConsumidos, "Consumido"));
 
-        calcularConsumos();
+                PieDataSet carbSet = new PieDataSet(carbohidratosEntries, "Carbohidratos");
+                carbSet.setColors(ColorTemplate.MATERIAL_COLORS);
+                carbSet.setValueTextSize(10f);
+                carbSet.setValueTextColor(R.color.black);
+                PieData carbData = new PieData(carbSet);
+                chartCarbohidratos.setData(carbData);
+                chartCarbohidratos.getDescription().setEnabled(false);
+                chartCarbohidratos.animateY(500);
+                chartCarbohidratos.setCenterText("Carbohidratos (g)");
+                chartCarbohidratos.setCenterTextSize(10f);
+                chartCarbohidratos.getLegend().setEnabled(false);
+                chartCarbohidratos.invalidate();
 
-        PieChart chartCarbohidratos = binding.carbohidratosChart;
-        List<PieEntry> carbohidratosEntries = new ArrayList<>();
-        carbohidratosEntries.add(new PieEntry((float) carbsRestantes, "Restante"));
-        carbohidratosEntries.add(new PieEntry((float)carbsConsumidos, "Consumido"));
+                PieChart chartProteinas = binding.proteinasChart;
+                List<PieEntry> proteinasEntries = new ArrayList<>();
+                proteinasEntries.add(new PieEntry((float) protesRestantes, "Restante"));
+                proteinasEntries.add(new PieEntry((float)protesConsumidos, "Consumido"));
 
-        PieDataSet carbSet = new PieDataSet(carbohidratosEntries, "Carbohidratos");
-        carbSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        PieData carbData = new PieData(carbSet);
-        chartCarbohidratos.setData(carbData);
-        chartCarbohidratos.invalidate();
+                PieDataSet protSet = new PieDataSet(proteinasEntries, "Proteínas");
+                protSet.setColors(ColorTemplate.MATERIAL_COLORS);
+                protSet.setValueTextSize(10f);
+                carbSet.setValueTextColor(R.color.black);
+                PieData protData = new PieData(protSet);
+                chartProteinas.setData(protData);
+                chartProteinas.getDescription().setEnabled(false);
+                chartProteinas.animateY(500);
+                chartProteinas.setCenterText("Proteínas (g)");
+                chartProteinas.setCenterTextSize(10f);
+                chartProteinas.getLegend().setEnabled(false);
+                chartProteinas.invalidate();
+
+                PieChart chartGrasas = binding.grasasChart;
+                List<PieEntry> grasasEntries = new ArrayList<>();
+                grasasEntries.add(new PieEntry((float) grasasRestantes, "Restante"));
+                grasasEntries.add(new PieEntry((float)grasasConsumidas, "Consumido"));
+
+                PieDataSet grasSet = new PieDataSet(grasasEntries, "Grasas");
+                grasSet.setColors(ColorTemplate.MATERIAL_COLORS);
+                grasSet.setValueTextSize(10f);
+                carbSet.setValueTextColor(R.color.black);
+                PieData grasData = new PieData(grasSet);
+                chartGrasas.setData(grasData);
+                chartGrasas.getDescription().setEnabled(false);
+                chartGrasas.animateY(500);
+                chartGrasas.setCenterText("Grasas (g)");
+                chartGrasas.setCenterTextSize(10f);
+                chartGrasas.getLegend().setEnabled(false);
+                chartGrasas.invalidate();
+
+                PieChart chartCalorias = binding.caloriasChart;
+                List<PieEntry> caloriasEntries = new ArrayList<>();
+                caloriasEntries.add(new PieEntry((float) calRestantes, "Restante"));
+                caloriasEntries.add(new PieEntry((float)calConsumidas, "Consumido"));
+
+                PieDataSet calSet = new PieDataSet(caloriasEntries, "Calorías");
+                calSet.setColors(ColorTemplate.MATERIAL_COLORS);
+                calSet.setValueTextSize(10f);
+                carbSet.setValueTextColor(R.color.black);
+                PieData calData = new PieData(calSet);
+                chartCalorias.setData(calData);
+                chartCalorias.getDescription().setEnabled(false);
+                chartCalorias.animateY(500);
+                chartCalorias.setCenterText("Calorías (kcal)");
+                chartCalorias.setCenterTextSize(10f);
+                chartCalorias.getLegend().setEnabled(false);
+                chartCalorias.invalidate();
+            });
+        }).start();
 
         return root;
     }
 
     private void obtenerObjetivos(){
-        new Thread(() -> {
-            System.out.println("Antes de obtener objetivos");
-            HashMap<String, Object> respuestaObjetivos = UsuarioDAO.consultarUsuario("skywhite");
-            System.out.println("Después de obtener objetivos");
-            Usuario usuario = (Usuario) respuestaObjetivos.get("objeto");
-            carbsTotales = usuario.getCarbohidratos();
-            protesTotales = usuario.getProteinas();
-            grasasTotales = usuario.getGrasas();
-        }).start();
+        HashMap<String, Object> respuestaObjetivos = UsuarioDAO.consultarUsuario("skywhite");
+        Usuario usuario = (Usuario) respuestaObjetivos.get("objeto");
+        calTotales = usuario.getCalorias();
+        carbsTotales = usuario.getCarbohidratos();
+        protesTotales = usuario.getProteinas();
+        grasasTotales = usuario.getGrasas();
+    }
+
+    private void obtenerConsumos(){
+        HashMap<String, Object> respuesta = ConsumoDAO.consultarConsumosHoy("skywhite", "2024-12-05");
+        if(respuesta.get("error").equals(true)){
+            System.out.println(respuesta.get("mensaje"));
+        }
+        consumos = (List<ConsumoDiario>) respuesta.get("objeto");
     }
 
     private void calcularConsumos() {
         for(ConsumoDiario consumo : consumos) {
+            calConsumidas += consumo.getCalorias() * consumo.getCantidad();
             carbsConsumidos += consumo.getCarbohidratos() * consumo.getCantidad();
             protesConsumidos += consumo.getProteinas() * consumo.getCantidad();
             grasasConsumidas += consumo.getGrasas() * consumo.getCantidad();
         }
 
+        calRestantes = calTotales - calConsumidas;
         carbsRestantes = carbsTotales - carbsConsumidos;
         protesRestantes = protesTotales - protesConsumidos;
         grasasRestantes = grasasTotales - grasasConsumidas;

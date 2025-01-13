@@ -15,7 +15,7 @@ public class UsuarioDAO {
     public static HashMap<String, Object> consultarUsuario(String nombreUsuario) {
         HashMap<String, Object> respuesta = new HashMap<>();
         respuesta.put("error", true);
-        System.out.println("Entra 0");
+
         try {
             String token = GestorToken.TOKEN;
             if (token == null || token.isEmpty()) {
@@ -24,10 +24,8 @@ public class UsuarioDAO {
 
             Call<JsonObject> call = ApiService.getService().obtenerUsuarioPorNombre(nombreUsuario, token);
             Response<JsonObject> response = call.execute();
-            System.out.println("Entra 1");
 
             if (response.isSuccessful() && response.body() != null) {
-                System.out.println("Entra 2");
                 JsonObject usuarioJson = response.body();
                 JsonObject objetivoJson = usuarioJson.getAsJsonObject("objetivo");
                 Usuario usuario = new Usuario(

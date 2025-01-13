@@ -32,28 +32,35 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_marginTop="20dp"
                 android:padding="5dp"
                 android:gravity="center">
 
                 <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/caloriasChart"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    android:layout_marginHorizontal="5dp"
+                    />
+
+                <com.github.mikephil.charting.charts.PieChart
                     android:id="@+id/carbohidratosChart"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
                     android:layout_marginHorizontal="5dp"
                     />
 
                 <com.github.mikephil.charting.charts.PieChart
                     android:id="@+id/grasasChart"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
                     android:layout_marginHorizontal="5dp"/>
 
                 <com.github.mikephil.charting.charts.PieChart
                     android:id="@+id/proteinasChart"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
                     android:layout_marginHorizontal="5dp"/>
             </LinearLayout>
         </LinearLayout>

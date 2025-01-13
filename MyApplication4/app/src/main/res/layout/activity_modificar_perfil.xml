@@ -135,7 +135,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Repetir estructura para calorías, carbohidratos, grasas y proteínas -->
-                <TextView
+                <!--TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/calorias"
@@ -153,7 +153,7 @@
                         android:layout_height="wrap_content" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Repetir para carbohidratos, grasas y proteínas -->
+
 
                 <TextView
                     android:layout_width="match_parent"
@@ -207,7 +207,7 @@
                         android:id="@+id/proteinas"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
-                </com.google.android.material.textfield.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout-->
 
                 <Button
                     android:id="@+id/btnModificarPerfil"

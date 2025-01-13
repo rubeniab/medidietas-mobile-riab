@@ -19,10 +19,27 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myapplication4.LoginActivity;
 import com.example.myapplication4.ApiService;
+import com.example.myapplication4.R;
 import com.example.myapplication4.TokenManager;
 import com.example.myapplication4.databinding.FragmentHomeBinding;
+import com.example.myapplication4.ui.daos.ConsumoDAO;
+import com.example.myapplication4.ui.daos.UsuarioDAO;
+import com.example.myapplication4.ui.modelos.ConsumoDiario;
+import com.example.myapplication4.ui.perfil.Usuario;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -32,6 +49,16 @@ import retrofit2.Response;
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
+    List<ConsumoDiario> consumos = new ArrayList<>();
+    double carbsTotales = 0;
+    double carbsConsumidos = 0;
+    double carbsRestantes = 0;
+    double protesTotales = 0;
+    double protesConsumidos = 0;
+    double protesRestantes = 0;
+    double grasasTotales = 0;
+    double grasasConsumidas = 0;
+    double grasasRestantes = 0;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -42,13 +69,53 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        obtenerObjetivos();
 
-        // Configurar botón de logout
-        Button logoutButton = binding.btnLogout; // Asegúrate de que el ID coincide con el XML
-        logoutButton.setOnClickListener(v -> performLogOut());
+        //Obtener consumos
+        Calendar cal = new GregorianCalendar();
+        Date fechaHoy = cal.getTime();
+        System.out.println(fechaHoy);
+        HashMap<String, Object> respuesta = ConsumoDAO.consultarConsumosHoy("skywhite", fechaHoy);
+        consumos = (List<ConsumoDiario>) respuesta.get("objeto");
+
+        calcularConsumos();
+
+        PieChart chartCarbohidratos = binding.carbohidratosChart;
+        List<PieEntry> carbohidratosEntries = new ArrayList<>();
+        carbohidratosEntries.add(new PieEntry((float) carbsRestantes, "Restante"));
+        carbohidratosEntries.add(new PieEntry((float)carbsConsumidos, "Consumido"));
+
+        PieDataSet carbSet = new PieDataSet(carbohidratosEntries, "Carbohidratos");
+        carbSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        PieData carbData = new PieData(carbSet);
+        chartCarbohidratos.setData(carbData);
+        chartCarbohidratos.invalidate();
+
         return root;
+    }
+
+    private void obtenerObjetivos(){
+        new Thread(() -> {
+            System.out.println("Antes de obtener objetivos");
+            HashMap<String, Object> respuestaObjetivos = UsuarioDAO.consultarUsuario("skywhite");
+            System.out.println("Después de obtener objetivos");
+            Usuario usuario = (Usuario) respuestaObjetivos.get("objeto");
+            carbsTotales = usuario.getCarbohidratos();
+            protesTotales = usuario.getProteinas();
+            grasasTotales = usuario.getGrasas();
+        }).start();
+    }
+
+    private void calcularConsumos() {
+        for(ConsumoDiario consumo : consumos) {
+            carbsConsumidos += consumo.getCarbohidratos() * consumo.getCantidad();
+            protesConsumidos += consumo.getProteinas() * consumo.getCantidad();
+            grasasConsumidas += consumo.getGrasas() * consumo.getCantidad();
+        }
+
+        carbsRestantes = carbsTotales - carbsConsumidos;
+        protesRestantes = protesTotales - protesConsumidos;
+        grasasRestantes = grasasTotales - grasasConsumidas;
     }
 
     public void performLogOut() {

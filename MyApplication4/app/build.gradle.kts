@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.protobuf") version "0.9.3" // Plugin de Protobuf
 }
 
 android {
@@ -51,8 +52,9 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")   // Gson converter (si usas JSON)
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation(libs.media3.common)
-
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }
+

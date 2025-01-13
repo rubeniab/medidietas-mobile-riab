@@ -52,6 +52,7 @@
     <string name="tituloP">CONSULTAR PERFIL</string>
     <string name="btnModificarPerfil">Modificar perfil</string>
     <string name="btnGuardarModificacion">Guardar modificacion</string>
+    <string name="tituloDiario">Diario de consumo</string>
 
     <string-array name="sexo_array">
         <item>Hombre</item>

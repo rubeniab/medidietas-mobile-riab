@@ -4,13 +4,16 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.myapplication4.ApiService;
+import com.example.myapplication4.Consumo;
 import com.example.myapplication4.ui.Utilidades.GestorToken;
 import com.example.myapplication4.ui.modelos.Alimento;
 import com.example.myapplication4.ui.modelos.Comida;
+import com.example.myapplication4.ui.modelos.ConsumoDiario;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -116,6 +119,56 @@ public class ConsumoDAO {
         } catch (Exception e) {
             respuesta.put("mensaje", "Error: " + e.getMessage());
             Log.e("ComidaError", e.getMessage(), e);
+        }
+        return respuesta;
+    }
+
+    public static HashMap<String, Object> consultarConsumosHoy(String nombreUsuario, Date fecha) {
+        HashMap<String, Object> respuesta = new HashMap<>();
+        respuesta.put("error", true);
+        try {
+            String token = GestorToken.TOKEN;
+            if (token == null || token.isEmpty()) {
+                throw new Exception("Token no válido");
+            }
+
+            JsonObject fechaJson = new JsonObject();
+            fechaJson.addProperty("fecha", fecha.toString());
+
+            Call<JsonArray> call = ApiService.getService().obtenerConsumos(nombreUsuario, token, fechaJson);
+            Response<JsonArray> response = call.execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                JsonArray consumosJson = response.body();
+                List<ConsumoDiario> consumosDia = new ArrayList<>();
+
+                for (int i = 0; i < consumosJson.size(); i++) {
+                    JsonObject jsonObject = consumosJson.get(i).getAsJsonObject();
+                    ConsumoDiario consumo = new ConsumoDiario(
+                            jsonObject.get("nombre").getAsString(),
+                            jsonObject.get("tamano_racion").getAsString(),
+                            jsonObject.get("calorias").getAsDouble(),
+                            jsonObject.get("carbohidratos").getAsDouble(),
+                            jsonObject.get("grasas").getAsDouble(),
+                            jsonObject.get("proteinas").getAsDouble(),
+                            jsonObject.get("cantidad").getAsDouble(),
+                            jsonObject.get("momento").getAsString()
+                    );
+                    consumosDia.add(consumo);
+                }
+
+                respuesta.put("error", false);
+                respuesta.put("objeto", consumosDia);
+
+            } else {
+                String errorBody = response.errorBody() != null ?
+                        response.errorBody().string() : "Cuerpo de error vacío";
+                respuesta.put("mensaje", "Error al obtener los consumos. Código de respuesta: "
+                        + response.code() + ", Cuerpo de error: " + errorBody);
+            }
+        } catch (Exception e) {
+            respuesta.put("mensaje", "Error: " + e.getMessage());
+            Log.e("ConsumoError", e.getMessage(), e);
         }
         return respuesta;
     }

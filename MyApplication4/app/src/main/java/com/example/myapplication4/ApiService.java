@@ -56,6 +56,9 @@ public class ApiService {
 
         @GET("api/medidietas/consumos/{nombre_usuario}/{fecha}")
         Call<JsonArray> obtenerConsumos(@Path("nombre_usuario") String nombreUsuario, @Path("fecha") String fecha,@Header("x-token") String token);
+
+        @POST("api/medidietas/consumos")
+        Call<JsonObject> registrarConsumo(@Header("x-token") String token, @Body JsonObject consumo);
     }
 
     // Singleton para Retrofit

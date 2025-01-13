@@ -39,7 +39,7 @@ public class RegistrarObjetivos extends AppCompatActivity {
     private Spinner spinnerSexo;
     private static final int REQUEST_IMAGE_PICK = 2;
     private ImageView imageView;
-    private Button btnRegistrarObjetivos, btnCancelarRegistroObjetivos, btnRegistrar;
+    private Button  btnRegistrar, btnCancelar, btnCancelarRegistroUsuario, btnSalir;
     private ProgressDialog progressDialog; // Agregamos ProgressDialog
 
     @Override
@@ -64,6 +64,7 @@ public class RegistrarObjetivos extends AppCompatActivity {
         grasas = findViewById(R.id.grasas);
         proteinas = findViewById(R.id.proteinas);
         btnRegistrar = findViewById(R.id.btnRegistrar);
+        btnSalir = findViewById(R.id.btnCancelar);
         Button openGalleryButton = findViewById(R.id.btnGaleria);
 
         String[] options = {"Masculino", "Femenino"};
@@ -97,9 +98,15 @@ public class RegistrarObjetivos extends AppCompatActivity {
             datePickerDialog.show();
         });
 
+        btnSalir.setOnClickListener(v -> {
+           finish();
+        });
+
         openGalleryButton.setOnClickListener(v -> {
             Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(pickPhoto, REQUEST_IMAGE_PICK);
+
+
         });
 
         btnRegistrar.setOnClickListener(v -> {
@@ -118,6 +125,8 @@ public class RegistrarObjetivos extends AppCompatActivity {
                 Toast.makeText(RegistrarObjetivos.this, "Por favor, selecciona una foto", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+
 
 
             // Validación de campos
@@ -212,6 +221,8 @@ public class RegistrarObjetivos extends AppCompatActivity {
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     Toast.makeText(RegistrarObjetivos.this, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(RegistrarObjetivos.this, LoginActivity.class);
+                    startActivity(intent);
                 } else {
                     Toast.makeText(RegistrarObjetivos.this, "Error en el registro", Toast.LENGTH_SHORT).show();
                 }
@@ -222,6 +233,7 @@ public class RegistrarObjetivos extends AppCompatActivity {
                 progressDialog.dismiss();
                 Toast.makeText(RegistrarObjetivos.this, "Error de conexión", Toast.LENGTH_SHORT).show();
             }
+
         });
     }
 

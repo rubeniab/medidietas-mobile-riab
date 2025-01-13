@@ -72,6 +72,10 @@ public class registrarUsuarioActivity extends AppCompatActivity {
             finish();
         });
 
+        btnCancelar.setOnClickListener(v -> {
+            finish();
+        });
+
         //Acción al hacer clic en el campo de fecha de nacimiento para mostrar un DatePicker
         fecha_nacimiento.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();

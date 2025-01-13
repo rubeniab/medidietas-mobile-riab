@@ -7,7 +7,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -19,6 +21,7 @@ import com.example.myapplication4.ui.daos.ConsumoDAO;
 import com.example.myapplication4.ui.modelos.Alimento;
 import com.example.myapplication4.ui.modelos.Categoria;
 import com.example.myapplication4.ui.modelos.Comida;
+import com.example.myapplication4.ui.modelos.Momento;
 import com.example.myapplication4.ui.modelos.UnidadMedida;
 
 import java.util.ArrayList;
@@ -32,8 +35,11 @@ public class RegistrarConsumoFragment extends Fragment {
     private List<String[]> datos = new ArrayList<>();
     private List<Alimento> alimentosList = new ArrayList<>();
     private List<Comida> comidasList = new ArrayList<>();
+    private List<Momento> momentosList = new ArrayList<>();
     private HashMap<Integer, String> categoriasMap = new HashMap<>();
     private HashMap<Integer, String> unidadesMedidaMap = new HashMap<>();
+    private double cantidadConsumo;
+    private String momentoSeleccionado;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -103,6 +109,14 @@ public class RegistrarConsumoFragment extends Fragment {
                 }
             } else {
                 System.out.println("Error: " + respuestaComidas.get("mensaje"));
+            }
+
+            // Obtener momentos
+            HashMap<String, Object> respuestaMomentos = ConsumoDAO.obtenerMomentos(getContext());
+            if (!(boolean) respuestaMomentos.get("error")) {
+                momentosList = (List<Momento>) respuestaMomentos.get("objeto");
+            } else {
+                System.out.println("Error: " + respuestaMomentos.get("mensaje"));
             }
 
             // Actualizar la UI en el hilo principal
@@ -176,7 +190,16 @@ public class RegistrarConsumoFragment extends Fragment {
     }
 
     private void showResumenDialog(Alimento alimento) {
-        String resumen = "Nombre: " + alimento.getNombre() +
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Resumen");
+
+        // Crear un layout para el diálogo
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_resumen, null);
+        builder.setView(dialogView);
+
+        // Configurar los TextViews
+        TextView resumenTextView = dialogView.findViewById(R.id.resumen_text_view);
+        resumenTextView.setText("Nombre: " + alimento.getNombre() +
                 "\nRación: " + alimento.getTamanoRacion() + " " + unidadesMedidaMap.getOrDefault(alimento.getIdUnidadMedida(), "Desconocido") +
                 "\nCalorías: " + alimento.getCalorias() +
                 "\nCarbohidratos: " + alimento.getCarbohidratos() +
@@ -185,32 +208,74 @@ public class RegistrarConsumoFragment extends Fragment {
                 "\nTamaño de ración: " + alimento.getTamanoRacion() +
                 "\nUnidad de medida: " + unidadesMedidaMap.getOrDefault(alimento.getIdUnidadMedida(), "Desconocido") +
                 "\nMarca: " + alimento.getMarca() +
-                "\nCategoría: " + categoriasMap.getOrDefault(alimento.getIdCategoria(), "Desconocido");
+                "\nCategoría: " + categoriasMap.getOrDefault(alimento.getIdCategoria(), "Desconocido"));
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Resumen");
-        builder.setMessage(resumen);
+        // Configurar el EditText para la cantidad
+        EditText cantidadEditText = dialogView.findViewById(R.id.cantidad_edit_text);
+
+        // Configurar el Spinner para los momentos
+        Spinner momentoSpinner = dialogView.findViewById(R.id.momento_spinner);
+        List<String> momentosNombres = new ArrayList<>();
+        for (Momento momento : momentosList) {
+            momentosNombres.add(momento.getNombre());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, momentosNombres);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        momentoSpinner.setAdapter(adapter);
+
         builder.setPositiveButton("Agregar", (dialog, id) -> {
-            Toast.makeText(getContext(), "Agregado con éxito", Toast.LENGTH_SHORT).show();
+            String cantidadStr = cantidadEditText.getText().toString();
+            if (!cantidadStr.isEmpty()) {
+                cantidadConsumo = Double.parseDouble(cantidadStr);
+                momentoSeleccionado = momentoSpinner.getSelectedItem().toString();
+                Toast.makeText(getContext(), "Cantidad agregada: " + cantidadConsumo + ", Momento: " + momentoSeleccionado, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Por favor, ingrese una cantidad", Toast.LENGTH_SHORT).show();
+            }
         });
         builder.setNegativeButton("Cerrar", null);
         builder.create().show();
     }
 
     private void showResumenDialogComida(Comida comida) {
-        String resumen = "Nombre: " + comida.getNombre() +
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Resumen");
+
+        // Crear un layout para el diálogo
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_resumen, null);
+        builder.setView(dialogView);
+
+        // Configurar los TextViews
+        TextView resumenTextView = dialogView.findViewById(R.id.resumen_text_view);
+        resumenTextView.setText("Nombre: " + comida.getNombre() +
                 "\nCalorías: " + comida.getCalorias() +
                 "\nCarbohidratos: " + comida.getCarbohidratos() +
                 "\nGrasas: " + comida.getGrasas() +
                 "\nProteínas: " + comida.getProteinas() +
-                "\nPreparación: " + comida.getPreparacionVideo() +
-                "\nReceta: " + comida.getReceta();
+                "\nReceta: " + comida.getReceta());
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Resumen");
-        builder.setMessage(resumen);
+        // Configurar el EditText para la cantidad
+        EditText cantidadEditText = dialogView.findViewById(R.id.cantidad_edit_text);
+
+        // Configurar el Spinner para los momentos
+        Spinner momentoSpinner = dialogView.findViewById(R.id.momento_spinner);
+        List<String> momentosNombres = new ArrayList<>();
+        for (Momento momento : momentosList) {
+            momentosNombres.add(momento.getNombre());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, momentosNombres);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        momentoSpinner.setAdapter(adapter);
+
         builder.setPositiveButton("Agregar", (dialog, id) -> {
-            Toast.makeText(getContext(), "Agregado con éxito", Toast.LENGTH_SHORT).show();
+            String cantidadStr = cantidadEditText.getText().toString();
+            if (!cantidadStr.isEmpty()) {
+                cantidadConsumo = Double.parseDouble(cantidadStr);
+                momentoSeleccionado = momentoSpinner.getSelectedItem().toString();
+                Toast.makeText(getContext(), "Consumo agregado con éxito", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Por favor, ingrese una cantidad", Toast.LENGTH_SHORT).show();
+            }
         });
         builder.setNegativeButton("Cerrar", null);
         builder.create().show();

@@ -94,4 +94,8 @@ public class HomeActivity extends AppCompatActivity {
     private void clearSessionData() {
         getSharedPreferences("MyAppPrefs", MODE_PRIVATE).edit().clear().apply();
     }
+
+    private void prueba() {
+
+    }
 }

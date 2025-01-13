@@ -1,6 +1,8 @@
+import com.google.protobuf.gradle.id
+
 plugins {
     alias(libs.plugins.android.application)
-    id("com.google.protobuf") version "0.9.3" // Plugin de Protobuf
+    id("com.google.protobuf") // Plugin de Protobuf
 }
 
 android {
@@ -35,6 +37,28 @@ android {
     }
 }
 
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.17.3"
+    }
+    plugins {
+        id("grpc") {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.41.0"
+        }
+        id("javalite") {
+            artifact = "com.google.protobuf:protoc-gen-javalite:3.17.3"
+        }
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.plugins {
+                id("grpc") {}
+                id("javalite") {}
+            }
+        }
+    }
+}
+
 dependencies {
 
     implementation(libs.appcompat)
@@ -53,8 +77,16 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation(libs.media3.common)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    implementation(libs.grpc.okhttp.v1410)
+    implementation(libs.grpc.protobuf)
+    implementation(libs.grpc.grpc.stub)
+    implementation(libs.annotations.api)
+    implementation(libs.protostuff.runtime)
+    implementation(libs.protostuff.api)
 }
 

@@ -6,8 +6,8 @@ import com.example.myapplication4.ApiService;
 import com.example.myapplication4.LoginActivity;
 import com.example.myapplication4.ui.Utilidades.Constantes;
 import com.example.myapplication4.ui.Utilidades.GestorToken;
+import com.example.myapplication4.ui.modelos.UsuarioMovil;
 import com.example.myapplication4.ui.perfil.Usuario;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.util.HashMap;
@@ -32,8 +32,36 @@ public class UsuarioDAO {
                 JsonObject usuarioJson = response.body().getAsJsonObject("usuario");
 
                 // Guardar datos del usuario en variables globales
+                Constantes.NOMBRE = usuarioJson.get("nombre").getAsString();
+                Constantes.APELLIDO_PATERNO = usuarioJson.get("apellido_paterno").getAsString();
+                Constantes.APELLIDO_MATERNO = usuarioJson.get("apellido_materno").getAsString();
                 Constantes.NOMBRE_USUARIO = usuarioJson.get("nombre_usuario").getAsString();
                 Constantes.CORREO = usuarioJson.get("correo").getAsString();
+
+                if (usuarioJson.has("objetivo")) {
+                    JsonObject objetivoJson = usuarioJson.getAsJsonObject("objetivo");
+
+                    Log.d("UsuarioDAO", "Contenido de 'objetivo': " + objetivoJson.toString());
+
+                    // Asignar calorías y otros valores
+                    try {
+                        Constantes.CALORIAS = objetivoJson.get("calorias").getAsDouble();
+                        Constantes.CARBOHIDRATOS = objetivoJson.get("carbohidratos").getAsDouble();
+                        Constantes.GRASAS = objetivoJson.get("grasas").getAsDouble();
+                        Constantes.PROTEINAS = objetivoJson.get("proteinas").getAsDouble();
+
+                        Log.d("UsuarioDAO", "Calorías: " + Constantes.CALORIAS);
+                        Log.d("UsuarioDAO", "Carbohidratos: " + Constantes.CARBOHIDRATOS);
+                        Log.d("UsuarioDAO", "Grasas: " + Constantes.GRASAS);
+                        Log.d("UsuarioDAO", "Proteínas: " + Constantes.PROTEINAS);
+
+                    } catch (Exception e) {
+                        Log.e("UsuarioDAO", "Error al procesar datos de 'objetivo': " + e.getMessage());
+                    }
+                } else {
+                    Log.d("UsuarioDAO", "'objetivo' no está presente en el JSON.");
+                }
+
 
                 respuesta.put("error", false);
                 respuesta.put("objeto", usuarioJson);
@@ -105,4 +133,31 @@ public class UsuarioDAO {
         }
         return respuesta;
     }
+    /*public static HashMap<String, Object> actualizarUsuario(String nombreUsuario, UsuarioMovil usuario) {
+        HashMap<String, Object> respuesta = new HashMap<>();
+        respuesta.put("error", true);
+
+        try {
+            // Obtener el token
+            String token = GestorToken.TOKEN;
+            if (token == null || token.isEmpty()) {
+                throw new Exception("Token no válido");
+            }
+
+            // Realizar la llamada PUT
+            Call<JsonObject> call = ApiService.getService().actualizarUsuario(nombreUsuario, token, usuario);
+            Response<JsonObject> response = call.execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                JsonObject usuarioJson = response.body();
+                respuesta.put("error", false);
+                respuesta.put("objeto", usuarioJson);
+            } else {
+                respuesta.put("mensaje", "Error al actualizar el usuario");
+            }
+        } catch (Exception e) {
+            respuesta.put("mensaje", "Error: " + e.getMessage());
+        }
+        return respuesta;
+    }*/
 }

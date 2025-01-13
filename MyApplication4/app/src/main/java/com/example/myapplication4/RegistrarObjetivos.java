@@ -209,7 +209,7 @@ public class RegistrarObjetivos extends AppCompatActivity {
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                progressDialog.dismiss(); // Ocultar ProgressDialog al recibir la respuesta
+                progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     Toast.makeText(RegistrarObjetivos.this, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show();
                 } else {
@@ -219,7 +219,7 @@ public class RegistrarObjetivos extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                progressDialog.dismiss(); // Ocultar ProgressDialog al fallar
+                progressDialog.dismiss();
                 Toast.makeText(RegistrarObjetivos.this, "Error de conexión", Toast.LENGTH_SHORT).show();
             }
         });
@@ -237,7 +237,7 @@ public class RegistrarObjetivos extends AppCompatActivity {
             try (InputStream imageStream = getContentResolver().openInputStream(selectedImage)) {
                 Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
                 imageView.setImageBitmap(bitmap);
-                isPhotoSelected = true; // Marcar la foto como seleccionada
+                isPhotoSelected = true;
             } catch (FileNotFoundException e) {
                 Toast.makeText(this, "Error al cargar la imagen", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {

@@ -16,6 +16,9 @@
             android:id="@+id/nav_registrarConsumo"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="@string/menu_consumo" />
-
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="Cerrar sesión" />
     </group>
 </menu>

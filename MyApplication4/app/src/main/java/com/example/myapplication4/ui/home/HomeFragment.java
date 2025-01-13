@@ -4,26 +4,30 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.myapplication4.ApiService;
 import com.example.myapplication4.LoginActivity;
+import com.example.myapplication4.ApiService;
 import com.example.myapplication4.R;
 import com.example.myapplication4.TokenManager;
 import com.example.myapplication4.databinding.FragmentHomeBinding;
 import com.example.myapplication4.ui.daos.ConsumoDAO;
 import com.example.myapplication4.ui.daos.UsuarioDAO;
 import com.example.myapplication4.ui.modelos.ConsumoDiario;
-import com.example.myapplication4.ui.modelos.UsuarioMovil;
 import com.example.myapplication4.ui.perfil.Usuario;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -44,7 +48,9 @@ import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
+    private TableLayout tableLayout;
     private FragmentHomeBinding binding;
+    private List<String[]> datos = new ArrayList<>();
     List<ConsumoDiario> consumos = new ArrayList<>();
     double calTotales = 0;
     double calConsumidas = 0;
@@ -68,13 +74,12 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        tableLayout = binding.tableLayout;
+
         new Thread(() -> {
             obtenerObjetivos();
             obtenerConsumos();
             calcularConsumos();
-            if (!consumos.isEmpty()) {
-                System.out.println("Consumos: " + consumos.get(0).getCarbohidratos());
-            }
 
             getActivity().runOnUiThread(() -> {
                 PieChart chartCarbohidratos = binding.carbohidratosChart;
@@ -148,23 +153,57 @@ public class HomeFragment extends Fragment {
                 chartCalorias.setCenterTextSize(10f);
                 chartCalorias.getLegend().setEnabled(false);
                 chartCalorias.invalidate();
+
+                for(ConsumoDiario consumo : consumos) {
+                    datos.add(new String[] {consumo.getNombre(), consumo.getTamano_racion(), String.valueOf(consumo.getCalorias()), String.valueOf(consumo.getCantidad()), consumo.getMomento() });
+                }
+                cargarTabla();
             });
         }).start();
 
         return root;
     }
 
+    private void cargarTabla() {
+        // Elimina todas las vistas previas de la tabla
+        tableLayout.removeAllViews();
+
+        // Crea la fila de encabezados
+        TableRow headerRow = new TableRow(getContext());
+        for (String encabezado : new String[] {"Nombre", "Racion", "Calorias", "Cantidad", "Horario"}) {
+            TextView textView = new TextView(getContext());
+            textView.setText(encabezado);
+            textView.setPadding(16, 16, 16, 16);
+            textView.setTextSize(16); // Ajusta el tamaño de texto si es necesario
+            textView.setTypeface(null, Typeface.BOLD); // Resalta el texto de los encabezados
+            textView.setGravity(Gravity.CENTER); // Centra el texto en cada celda
+            headerRow.addView(textView);
+        }
+        tableLayout.addView(headerRow);
+
+        // Agrega las filas de datos
+        for (String[] fila : datos) {
+            TableRow dataRow = new TableRow(getContext());
+            for (String celda : fila) {
+                TextView textView = new TextView(getContext());
+                textView.setText(celda);
+                textView.setPadding(16, 16, 16, 16);
+                textView.setTextSize(14); // Ajusta el tamaño de texto si es necesario
+                textView.setGravity(Gravity.CENTER); // Centra el texto en cada celda
+                dataRow.addView(textView);
+            }
+            tableLayout.addView(dataRow);
+        }
+    }
+
+
     private void obtenerObjetivos(){
         HashMap<String, Object> respuestaObjetivos = UsuarioDAO.consultarUsuario("skywhite");
         Usuario usuario = (Usuario) respuestaObjetivos.get("objeto");
-        if (usuario != null) {
-            calTotales = usuario.getCalorias();
-            carbsTotales = usuario.getCarbohidratos();
-            protesTotales = usuario.getProteinas();
-            grasasTotales = usuario.getGrasas();
-        } else {
-            Log.e(TAG, "El objeto usuario es null");
-        }
+        calTotales = usuario.getCalorias();
+        carbsTotales = usuario.getCarbohidratos();
+        protesTotales = usuario.getProteinas();
+        grasasTotales = usuario.getGrasas();
     }
 
     private void obtenerConsumos(){
@@ -289,6 +328,7 @@ public class HomeFragment extends Fragment {
             getActivity().finish();
         }
     }*/
+
 
 
 

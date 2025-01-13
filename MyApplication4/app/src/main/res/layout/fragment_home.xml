@@ -63,6 +63,65 @@
                     android:layout_height="200dp"
                     android:layout_marginHorizontal="5dp"/>
             </LinearLayout>
+
+            <!-- Tabla para mostrar los consumos -->
+            <TableLayout
+                android:id="@+id/tableLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="1"
+                android:paddingTop="16dp"
+                android:background="#ffffff"
+                android:elevation="4dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp">
+
+                <!-- Fila de encabezado -->
+                <TableRow
+                    android:background="#4CAF51"
+                    android:layout_gravity="center"
+                    android:padding="6dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre"
+                        android:textColor="#ffffff"
+                        android:padding="6dp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="6dp"
+                        android:text="Ración"
+                        android:textColor="#ffffff"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Calorías"
+                        android:textColor="#ffffff"
+                        android:padding="6dp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cantidad"
+                        android:textColor="#ffffff"
+                        android:padding="6dp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Horario"
+                        android:textColor="#ffffff"
+                        android:padding="6dp"
+                        android:textStyle="bold"/>
+                </TableRow>
+
+                <!-- Aquí se agregarán las filas dinámicamente -->
+
+            </TableLayout>
         </LinearLayout>
 
     </ScrollView>

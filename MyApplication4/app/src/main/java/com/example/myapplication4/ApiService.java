@@ -21,7 +21,7 @@ import retrofit2.http.Path;
 
 public class ApiService {
 
-    private static final String BASE_URL = "http://10.0.2.2:8081/";
+    private static final String BASE_URL = "http://10.0.2.2:8086/";
 
     // Interfaz para las llamadas a la API
     public interface Service {
@@ -49,6 +49,9 @@ public class ApiService {
 
         @GET("api/medidietas/alimentos/categorias")
         Call<JsonArray> obtenerCategorias(@Header("x-token") String token);
+
+        @GET("api/medidietas/momentos")
+        Call<JsonArray> obtenerMomentos(@Header("x-token") String token);
     }
 
     // Singleton para Retrofit

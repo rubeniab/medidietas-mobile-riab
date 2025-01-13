@@ -8,6 +8,7 @@ import com.example.myapplication4.ui.Utilidades.GestorToken;
 import com.example.myapplication4.ui.modelos.Alimento;
 import com.example.myapplication4.ui.modelos.Categoria;
 import com.example.myapplication4.ui.modelos.Comida;
+import com.example.myapplication4.ui.modelos.Momento;
 import com.example.myapplication4.ui.modelos.UnidadMedida;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -94,17 +95,12 @@ public class ConsumoDAO {
                             jsonObject.get("nombre").getAsString(),
                             jsonObject.get("preparacion_video").getAsString(),
                             jsonObject.get("receta").getAsString(),
-                            jsonObject.get("estado").getAsBoolean()
+                            jsonObject.get("estado").getAsBoolean(),
+                            jsonObject.get("calorias").getAsDouble(),
+                            jsonObject.get("carbohidratos").getAsDouble(),
+                            jsonObject.get("grasas").getAsDouble(),
+                            jsonObject.get("proteinas").getAsDouble()
                     );
-                    // Si hay alimentos asociados, puedes procesarlos aquí
-                    if (jsonObject.has("alimentos")) {
-                        JsonObject alimentosJson = jsonObject.get("alimentos").getAsJsonObject();
-                        HashMap<String, Double> alimentos = new HashMap<>();
-                        for (String key : alimentosJson.keySet()) {
-                            alimentos.put(key, alimentosJson.get(key).getAsDouble());
-                        }
-                        comida.setAlimentos(alimentos);
-                    }
                     comidas.add(comida);
                 }
 
@@ -199,4 +195,44 @@ public class ConsumoDAO {
         }
         return respuesta;
     }
+
+    public static HashMap<String, Object> obtenerMomentos(Context context) {
+        HashMap<String, Object> respuesta = new HashMap<>();
+        respuesta.put("error", true);
+        try {
+            String token = GestorToken.TOKEN; // Obtener el token de alguna clase de gestión de tokens
+            if (token == null || token.isEmpty()) {
+                throw new Exception("Token no válido");
+            }
+
+            Call<JsonArray> call = ApiService.getService().obtenerMomentos(token);
+            Response<JsonArray> response = call.execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                JsonArray momentosJson = response.body();
+                List<Momento> momentos = new ArrayList<>();
+
+                for (int i = 0; i < momentosJson.size(); i++) {
+                    JsonObject jsonObject = momentosJson.get(i).getAsJsonObject();
+                    Momento momento = new Momento(
+                            jsonObject.get("id").getAsInt(),
+                            jsonObject.get("nombre").getAsString()
+                    );
+                    momentos.add(momento);
+                }
+
+                respuesta.put("error", false);
+                respuesta.put("objeto", momentos);
+
+            } else {
+                String errorBody = response.errorBody() != null ? response.errorBody().string() : "Cuerpo de error vacío";
+                respuesta.put("mensaje", "Error al obtener los momentos. Código de respuesta: " + response.code() + ", Cuerpo de error: " + errorBody);
+            }
+        } catch (Exception e) {
+            respuesta.put("mensaje", "Error: " + e.getMessage());
+            Log.e("MomentoError", e.getMessage(), e);
+        }
+        return respuesta;
+    }
+
 }

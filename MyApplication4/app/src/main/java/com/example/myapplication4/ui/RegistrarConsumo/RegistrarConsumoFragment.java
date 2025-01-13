@@ -30,6 +30,8 @@ public class RegistrarConsumoFragment extends Fragment {
     private TableLayout tableLayout;
     private EditText searchBar;
     private List<String[]> datos = new ArrayList<>();
+    private List<Alimento> alimentosList = new ArrayList<>();
+    private List<Comida> comidasList = new ArrayList<>();
     private HashMap<Integer, String> categoriasMap = new HashMap<>();
     private HashMap<Integer, String> unidadesMedidaMap = new HashMap<>();
 
@@ -80,6 +82,7 @@ public class RegistrarConsumoFragment extends Fragment {
                             String.valueOf(alimento.getCalorias()),
                             categoriaNombre
                     });
+                    alimentosList.add(alimento);
                 }
             } else {
                 System.out.println("Error: " + respuestaAlimentos.get("mensaje"));
@@ -93,9 +96,10 @@ public class RegistrarConsumoFragment extends Fragment {
                     datos.add(new String[]{
                             comida.getNombre(),
                             "1 unidad",
-                            "indefinido",
+                            String.valueOf(comida.getCalorias()),
                             "Comida"
                     });
+                    comidasList.add(comida);
                 }
             } else {
                 System.out.println("Error: " + respuestaComidas.get("mensaje"));
@@ -138,7 +142,8 @@ public class RegistrarConsumoFragment extends Fragment {
         }
         tableLayout.addView(headerRow);
 
-        for (String[] fila : datos) {
+        for (int i = 0; i < datos.size(); i++) {
+            String[] fila = datos.get(i);
             TableRow row = new TableRow(getContext());
             for (String dato : fila) {
                 TextView textView = new TextView(getContext());
@@ -147,7 +152,14 @@ public class RegistrarConsumoFragment extends Fragment {
                 row.addView(textView);
             }
 
-            row.setOnClickListener(v -> showResumenDialog(fila));
+            int finalI = i;
+            row.setOnClickListener(v -> {
+                if (fila[3].equals("Comida")) {
+                    showResumenDialogComida(comidasList.get(finalI - alimentosList.size()));
+                } else {
+                    showResumenDialog(alimentosList.get(finalI));
+                }
+            });
 
             tableLayout.addView(row);
         }
@@ -163,8 +175,36 @@ public class RegistrarConsumoFragment extends Fragment {
         cargarTabla(datosFiltrados);
     }
 
-    private void showResumenDialog(String[] fila) {
-        String resumen = "Nombre: " + fila[0] + "\nRación: " + fila[1] + "\nCalorías: " + fila[2] + "\nCategoría: " + fila[3];
+    private void showResumenDialog(Alimento alimento) {
+        String resumen = "Nombre: " + alimento.getNombre() +
+                "\nRación: " + alimento.getTamanoRacion() + " " + unidadesMedidaMap.getOrDefault(alimento.getIdUnidadMedida(), "Desconocido") +
+                "\nCalorías: " + alimento.getCalorias() +
+                "\nCarbohidratos: " + alimento.getCarbohidratos() +
+                "\nGrasas: " + alimento.getGrasas() +
+                "\nProteínas: " + alimento.getProteinas() +
+                "\nTamaño de ración: " + alimento.getTamanoRacion() +
+                "\nUnidad de medida: " + unidadesMedidaMap.getOrDefault(alimento.getIdUnidadMedida(), "Desconocido") +
+                "\nMarca: " + alimento.getMarca() +
+                "\nCategoría: " + categoriasMap.getOrDefault(alimento.getIdCategoria(), "Desconocido");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Resumen");
+        builder.setMessage(resumen);
+        builder.setPositiveButton("Agregar", (dialog, id) -> {
+            Toast.makeText(getContext(), "Agregado con éxito", Toast.LENGTH_SHORT).show();
+        });
+        builder.setNegativeButton("Cerrar", null);
+        builder.create().show();
+    }
+
+    private void showResumenDialogComida(Comida comida) {
+        String resumen = "Nombre: " + comida.getNombre() +
+                "\nCalorías: " + comida.getCalorias() +
+                "\nCarbohidratos: " + comida.getCarbohidratos() +
+                "\nGrasas: " + comida.getGrasas() +
+                "\nProteínas: " + comida.getProteinas() +
+                "\nPreparación: " + comida.getPreparacionVideo() +
+                "\nReceta: " + comida.getReceta();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Resumen");

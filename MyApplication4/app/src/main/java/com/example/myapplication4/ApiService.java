@@ -13,6 +13,7 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
+import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -21,7 +22,7 @@ import retrofit2.http.Path;
 
 public class ApiService {
 
-    private static final String BASE_URL = "http://10.0.2.2:8086/";
+    private static final String BASE_URL = "http://192.168.0.253:8081/";
 
     // Interfaz para las llamadas a la API
     public interface Service {
@@ -37,7 +38,7 @@ public class ApiService {
         Call<Void> registrarUsuario(@Body RegistroUsuario registroUsuario);
 
         @GET("api/medidietas/usuarios/{nombre_usuario}")
-        Call<Usuario> obtenerUsuarioPorNombre(@Path("nombre_usuario") String nombreUsuario, @Header("Authorization") String token);
+        Call<JsonObject> obtenerUsuarioPorNombre(@Path("nombre_usuario") String nombreUsuario, @Header("x-token") String token);
 
         @GET("api/medidietas/alimentos")
         Call<JsonArray> obtenerAlimentos(@Header("x-token") String token);
@@ -53,6 +54,9 @@ public class ApiService {
 
         @GET("api/medidietas/momentos")
         Call<JsonArray> obtenerMomentos(@Header("x-token") String token);
+
+        @GET("api/medidietas/consumos/{nombre_usuario}/{fecha}")
+        Call<JsonArray> obtenerConsumos(@Path("nombre_usuario") String nombreUsuario, @Path("fecha") String fecha,@Header("x-token") String token);
 
         @POST("api/medidietas/consumos")
         Call<JsonObject> registrarConsumo(@Header("x-token") String token, @Body JsonObject consumo);

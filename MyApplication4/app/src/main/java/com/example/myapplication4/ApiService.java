@@ -26,6 +26,7 @@ public class ApiService {
     // Interfaz para las llamadas a la API
     public interface Service {
         @Headers("Content-Type: application/json")
+
         @POST("api/medidietas/usuarios/login")
         Call<JsonObject> logIn(@Body JsonObject body);
 
@@ -55,6 +56,9 @@ public class ApiService {
 
         @POST("api/medidietas/consumos")
         Call<JsonObject> registrarConsumo(@Header("x-token") String token, @Body JsonObject consumo);
+
+        @GET("/api/medidietas/usuarios/{nombre_usuario}")
+        Call<JsonObject> obtenerUsuarioPorNombre(@Path("nombre_usuario") String nombreUsuario);
     }
 
     // Singleton para Retrofit

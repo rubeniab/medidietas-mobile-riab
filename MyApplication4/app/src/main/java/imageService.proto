@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package imageService;
+
+service ProfileImageService {
+    rpc downloadProfileImage (DownloadImageRequest) returns (DownloadImageResponse);
+    rpc uploadProfileImage (UploadImageRequest) returns (UploadFileResponse);
+    rpc deleteProfileImage (DeleteImageRequest) returns (DeleteImageResponse);
+}
+
+service FoodImageService {
+    rpc downloadFoodImage (DownloadImageRequest) returns (DownloadImageResponse);
+    rpc uploadFoodImage (UploadImageRequest) returns (UploadFileResponse);
+    rpc deleteFoodImage (DeleteImageRequest) returns (DeleteImageResponse);
+}
+
+message DownloadImageRequest {
+    string name = 1;
+}
+
+message DownloadImageResponse {
+    string imageData = 1;
+}
+
+message UploadImageRequest {
+    string name = 1;
+    string extension = 2;
+    string imageData = 3;
+}
+
+message UploadFileResponse {
+    bool result = 1;
+    string imageName = 2;
+}
+
+message DeleteImageRequest {
+    string name = 1;
+}
+
+message DeleteImageResponse {
+    bool result = 1;
+}

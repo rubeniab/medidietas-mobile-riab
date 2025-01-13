@@ -9,9 +9,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication4.ui.Utilidades.Constantes;
-import com.example.myapplication4.ui.daos.UsuarioMovilDAO;
+import com.example.myapplication4.ui.daos.UsuarioDAO;
 import com.example.myapplication4.ui.modelos.UsuarioMovil;
 
+import com.example.myapplication4.ui.perfil.Usuario;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.HashMap;
@@ -59,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void iniciarSesion(String correo, String contrasena) {
         new Thread(() -> {
-            HashMap<String, Object> respuesta = UsuarioMovilDAO.logIn(correo, contrasena, LoginActivity.this);
+            HashMap<String, Object> respuesta = UsuarioDAO  .logIn(correo, contrasena, LoginActivity.this);
 
             runOnUiThread(() -> {
                 if ((boolean) respuesta.get("error")) {
@@ -74,16 +75,20 @@ public class LoginActivity extends AppCompatActivity {
 
     private void obtenerIdUsuario() {
         new Thread(() -> {
-            HashMap<String, Object> respuesta = UsuarioMovilDAO.obtenerUsuarioPorNombre(Constantes.NOMBRE_USUARIO);
+            HashMap<String, Object> respuesta = UsuarioDAO.consultarUsuario(Constantes.NOMBRE_USUARIO);
 
             runOnUiThread(() -> {
                 if ((boolean) respuesta.get("error")) {
                     String mensaje = (String) respuesta.getOrDefault("mensaje", "Error desconocido");
                     Toast.makeText(LoginActivity.this, mensaje, Toast.LENGTH_SHORT).show();
                 } else {
-                    UsuarioMovil usuarioMovil = (UsuarioMovil) respuesta.get("objeto");
-                    Constantes.ID_USUARIO = usuarioMovil.getId();
-                    Log.d(TAG, "ID del usuario: " + Constantes.ID_USUARIO);
+                    Usuario usuario = (Usuario) respuesta.get("objeto");
+                    if (usuario != null) {
+                        Constantes.ID_USUARIO = usuario.getId();
+                        Log.d(TAG, "ID del usuario: " + Constantes.ID_USUARIO);
+                    } else {
+                        Log.e(TAG, "El objeto usuario es null");
+                    }
                     navigateToNextActivity();
                 }
             });

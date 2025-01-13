@@ -9,22 +9,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.myapplication4.LoginActivity;
 import com.example.myapplication4.ApiService;
+import com.example.myapplication4.LoginActivity;
 import com.example.myapplication4.R;
 import com.example.myapplication4.TokenManager;
 import com.example.myapplication4.databinding.FragmentHomeBinding;
 import com.example.myapplication4.ui.daos.ConsumoDAO;
 import com.example.myapplication4.ui.daos.UsuarioDAO;
 import com.example.myapplication4.ui.modelos.ConsumoDiario;
+import com.example.myapplication4.ui.modelos.UsuarioMovil;
 import com.example.myapplication4.ui.perfil.Usuario;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -35,9 +34,6 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -76,7 +72,9 @@ public class HomeFragment extends Fragment {
             obtenerObjetivos();
             obtenerConsumos();
             calcularConsumos();
-            System.out.println("Consumos: " + consumos.get(0).getCarbohidratos());
+            if (!consumos.isEmpty()) {
+                System.out.println("Consumos: " + consumos.get(0).getCarbohidratos());
+            }
 
             getActivity().runOnUiThread(() -> {
                 PieChart chartCarbohidratos = binding.carbohidratosChart;
@@ -159,10 +157,14 @@ public class HomeFragment extends Fragment {
     private void obtenerObjetivos(){
         HashMap<String, Object> respuestaObjetivos = UsuarioDAO.consultarUsuario("skywhite");
         Usuario usuario = (Usuario) respuestaObjetivos.get("objeto");
-        calTotales = usuario.getCalorias();
-        carbsTotales = usuario.getCarbohidratos();
-        protesTotales = usuario.getProteinas();
-        grasasTotales = usuario.getGrasas();
+        if (usuario != null) {
+            calTotales = usuario.getCalorias();
+            carbsTotales = usuario.getCarbohidratos();
+            protesTotales = usuario.getProteinas();
+            grasasTotales = usuario.getGrasas();
+        } else {
+            Log.e(TAG, "El objeto usuario es null");
+        }
     }
 
     private void obtenerConsumos(){
@@ -287,7 +289,6 @@ public class HomeFragment extends Fragment {
             getActivity().finish();
         }
     }*/
-
 
 
 

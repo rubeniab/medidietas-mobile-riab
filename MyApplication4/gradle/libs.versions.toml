@@ -1,5 +1,11 @@
 [versions]
-agp = "8.5.1"
+agp = "8.7.3"
+annotationsApi = "6.0.53"
+gradle = "7.0.4"
+grpcOkhttp = "1.69.0"
+grpcOkhttpVersion = "1.41.0"
+grpcStub = "1.25.0"
+javaxAnnotationApi = "1.3.2"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -14,11 +20,24 @@ navigationFragment = "2.8.4"
 navigationUi = "2.8.4"
 legacySupportV4 = "1.0.0"
 media3Common = "1.5.1"
+protobufGradlePlugin = "0.9.3"
+protobufLite = "3.0.1"
+protostuff = "1.8.0"
+protostuffRuntime = "1.7.4"
 retrofit = "2.9.0"
 gson = "2.8.8"
 firebaseDatabase = "21.0.0"
 
 [libraries]
+annotations-api = { module = "org.apache.tomcat:annotations-api", version.ref = "annotationsApi" }
+gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+grpc-grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpcOkhttpVersion" }
+grpc-okhttp = { module = "io.grpc:grpc-okhttp", version.ref = "grpcOkhttp" }
+grpc-okhttp-v1410 = { module = "io.grpc:grpc-okhttp", version.ref = "grpcOkhttpVersion" }
+grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpcOkhttpVersion" }
+grpc-protobuf-lite = { module = "io.grpc:grpc-protobuf-lite", version.ref = "grpcOkhttp" }
+grpc-stub = { module = "io.grpc:grpc.stub", version.ref = "grpcStub" }
+javax-annotation-api = { module = "javax.annotation:javax.annotation-api", version.ref = "javaxAnnotationApi" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -33,6 +52,11 @@ navigation-fragment = { group = "androidx.navigation", name = "navigation-fragme
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
+protobuf-gradle-plugin = { module = "com.google.protobuf:protobuf-gradle-plugin", version.ref = "protobufGradlePlugin" }
+protobuf-lite = { module = "com.google.protobuf:protobuf-lite", version.ref = "protobufLite" }
+protostuff = { module = "io.protostuff:protostuff", version.ref = "protostuff" }
+protostuff-api = { module = "io.protostuff:protostuff.api", version.ref = "protostuffRuntime" }
+protostuff-runtime = { module = "io.protostuff:protostuff-runtime", version.ref = "protostuffRuntime" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }

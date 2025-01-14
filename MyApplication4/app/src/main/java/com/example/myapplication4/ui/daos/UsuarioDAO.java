@@ -20,6 +20,10 @@ import com.google.gson.JsonObject;
 
 import java.util.HashMap;
 
+import imageService.ImageService;
+import imageService.ProfileImageServiceGrpc;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -165,6 +169,23 @@ public class UsuarioDAO {
                 Toast.makeText(context, "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public static String guardarFotoPerfil(String nombreUsuario, String extension, String imagen) throws Exception {
+        ProfileImageServiceGrpc.ProfileImageServiceBlockingStub stub =
+                ProfileImageServiceGrpc.newBlockingStub(ManagedChannelBuilder.
+                        forAddress(Constantes.IP, Constantes.PUERTO_API_GRPC_DOCKER).usePlaintext().build());
+
+        ImageService.UploadImageRequest solicitud = ImageService.UploadImageRequest.newBuilder()
+                .setName(nombreUsuario)
+                .setExtension(extension)
+                .setImageData(imagen)
+                .build();
+
+        ImageService.UploadFileResponse respuesta = stub.uploadProfileImage(solicitud);
+
+        System.out.println(respuesta.getImageName());
+        return respuesta.getImageName();
     }
 
     public static void actualizarUsuario(UsuarioMovil usuario, String token, final Callback<JsonObject> callback) {

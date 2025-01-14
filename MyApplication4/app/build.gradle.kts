@@ -1,6 +1,33 @@
+import com.google.protobuf.gradle.*
+
 plugins {
     alias(libs.plugins.android.application)
-    id("com.google.protobuf") version "0.9.3" // Plugin de Protobuf
+    id("com.google.protobuf") version "0.9.4" // Plugin de Protobuf
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.17.3"
+    }
+    plugins {
+        id("grpc") {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.68.1"
+        }
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                id("java") {
+                    option("lite")
+                }
+            }
+            task.plugins {
+                id("grpc") {
+                    option("lite")
+                }
+            }
+        }
+    }
 }
 
 android {
@@ -33,6 +60,15 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    sourceSets {
+        sourceSets {
+            getByName("main") {
+                proto {
+                    srcDir("src/main/protos") // Ruta a los archivos .proto
+                }
+            }
+        }
+    }
 }
 
 dependencies {
@@ -56,5 +92,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    implementation("io.grpc:grpc-okhttp:1.68.1")
+    implementation("io.grpc:grpc-protobuf-lite:1.68.1")
+    implementation("io.grpc:grpc-stub:1.68.1")
+    compileOnly("org.apache.tomcat:annotations-api:6.0.53")
 }
 

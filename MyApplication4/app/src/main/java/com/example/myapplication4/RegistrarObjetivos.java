@@ -5,10 +5,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Patterns;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,9 +28,13 @@ import com.example.myapplication4.ui.modelos.RegistroUsuario;
 import com.example.myapplication4.ui.modelos.Objetivo;
 import com.example.myapplication4.ui.daos.UsuarioDAO;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -91,6 +97,7 @@ public class RegistrarObjetivos extends AppCompatActivity {
     private void setupDatePicker() {
         fecha_nacimiento.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.YEAR, -18);
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -106,9 +113,15 @@ public class RegistrarObjetivos extends AppCompatActivity {
                     day
             );
 
-            long maxDate = calendar.getTimeInMillis();
-            calendar.set(year - 100, Calendar.JANUARY, 1);
-            long minDate = calendar.getTimeInMillis();
+            // Calcular la fecha máxima (hace 15 años)
+            Calendar maxCalendar = Calendar.getInstance();
+            maxCalendar.add(Calendar.YEAR, -15);
+            long maxDate = maxCalendar.getTimeInMillis();
+
+            // Calcular la fecha mínima (hace 100 años)
+            Calendar minCalendar = Calendar.getInstance();
+            minCalendar.add(Calendar.YEAR, -100);
+            long minDate = minCalendar.getTimeInMillis();
             datePickerDialog.getDatePicker().setMaxDate(maxDate);
             datePickerDialog.getDatePicker().setMinDate(minDate);
             datePickerDialog.show();
@@ -127,12 +140,33 @@ public class RegistrarObjetivos extends AppCompatActivity {
         startActivityForResult(pickPhoto, REQUEST_IMAGE_PICK);
     }
 
+    private String convertirIvAString() {
+        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        return encodedImage;
+    }
+
     private void handleRegistration() {
         if (validateInputs()) {
+
+            String foto = convertirIvAString();
+            String nombreFoto = "";
+            try {
+                nombreFoto = UsuarioDAO.guardarFotoPerfil(nombre_usuario.getText().toString(), "jpeg", foto);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             progressDialog = ProgressDialog.show(this, "Registrando", "Por favor espera...", true, false);
+
 
             UsuarioMovil usuarioMovil = new UsuarioMovil();
             usuarioMovil.setNombre(nombre.getText().toString());
+            usuarioMovil.setFoto(nombreFoto);
             usuarioMovil.setApellido_paterno(apellido_paterno.getText().toString());
             usuarioMovil.setApellido_materno(apellido_materno.getText().toString());
             usuarioMovil.setNombre_usuario(nombre_usuario.getText().toString());
@@ -141,7 +175,9 @@ public class RegistrarObjetivos extends AppCompatActivity {
             usuarioMovil.setEstatura(Double.parseDouble(estatura.getText().toString()));
             usuarioMovil.setPeso(Double.parseDouble(peso.getText().toString()));
             usuarioMovil.setSexo(spinnerSexo.getSelectedItem().toString().equals("Masculino"));
-            usuarioMovil.setFecha_nacimiento(fecha_nacimiento.getText().toString());
+            String fechaFormateada = formatearFecha();
+            usuarioMovil.setFecha_nacimiento(fechaFormateada);
+            System.out.println(usuarioMovil.getFecha_nacimiento());
 
             Objetivo objetivo = new Objetivo();
             objetivo.setCalorias(Double.parseDouble(calorias.getText().toString()));
@@ -155,6 +191,30 @@ public class RegistrarObjetivos extends AppCompatActivity {
 
             UsuarioDAO.registrarUsuario(registroUsuario, this);
         }
+    }
+
+    private String formatearFecha() {
+        String fechaFormateada = "";
+        try {
+            String fechaTexto = fecha_nacimiento.getText().toString(); // Ejemplo: "12/01/2025"
+
+            // Define el formato actual (de entrada) de la fecha
+            SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
+            // Define el formato deseado (de salida)
+            SimpleDateFormat formatoSalida = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+            // Convierte la fecha del texto a un objeto Date
+            Date fecha = formatoEntrada.parse(fechaTexto);
+
+            // Convierte el objeto Date al nuevo formato
+            fechaFormateada = formatoSalida.format(fecha);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return fechaFormateada;
     }
 
     private boolean validateInputs() {

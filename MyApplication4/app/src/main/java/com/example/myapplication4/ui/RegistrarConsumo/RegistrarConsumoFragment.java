@@ -15,6 +15,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
+import android.app.ProgressDialog;
 
 import com.example.myapplication4.R;
 import com.example.myapplication4.ui.Utilidades.Constantes;
@@ -46,13 +47,20 @@ public class RegistrarConsumoFragment extends Fragment {
     private double cantidadConsumo;
     private String momentoSeleccionado;
     private int idMomentoSeleccionado;
+    private ProgressDialog progressDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_registrar_consumo, container, false);
 
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Cargando datos...");
+        progressDialog.setCancelable(false);
+
         tableLayout = view.findViewById(R.id.tableLayout);
         searchBar = view.findViewById(R.id.search_bar);
+
+        progressDialog.show();
 
         new Thread(() -> {
             // Obtener categorías
@@ -126,7 +134,10 @@ public class RegistrarConsumoFragment extends Fragment {
             }
 
             // Actualizar la UI en el hilo principal
-            getActivity().runOnUiThread(() -> cargarTabla(datos));
+            getActivity().runOnUiThread(() -> {
+                progressDialog.dismiss();
+                cargarTabla(datos);
+            });
         }).start();
 
         searchBar.addTextChangedListener(new TextWatcher() {
@@ -304,10 +315,16 @@ public class RegistrarConsumoFragment extends Fragment {
                 // Crear el objeto Consumo
                 Consumo consumo = new Consumo(fechaActual, cantidadConsumo, idMomentoSeleccionado, comida.getId(), Constantes.ID_USUARIO);
 
+                ProgressDialog progressDialogGuardar = new ProgressDialog(getContext());
+                progressDialogGuardar.setMessage("Registrando consumo...");
+                progressDialogGuardar.setCancelable(false);
+                progressDialogGuardar.show();
+
                 // Registrar el consumo
                 new Thread(() -> {
                     HashMap<String, Object> respuesta = ConsumoDAO.registrarConsumo(getContext(), consumo, true);
                     getActivity().runOnUiThread(() -> {
+                        progressDialogGuardar.dismiss();
                         if (!(boolean) respuesta.get("error")) {
                             Toast.makeText(getContext(), "Consumo registrado correctamente", Toast.LENGTH_SHORT).show();
                         } else {

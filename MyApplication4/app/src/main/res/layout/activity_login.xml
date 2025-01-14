@@ -104,6 +104,16 @@
             android:layout_margin="5dp"
             android:layout_gravity="right"/>
 
+        <TextView
+            android:id="@+id/mensajeCargando"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Cargando recursos..."
+            android:textSize="18sp"
+            android:visibility="gone"
+            android:layout_marginTop="20dp"/>
+
     </LinearLayout>
 
 </LinearLayout>

@@ -1,9 +1,13 @@
 package com.example.myapplication4;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,16 +26,17 @@ import java.util.regex.Pattern;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Configuración de la vista
         TextInputEditText correo = findViewById(R.id.correo);
         TextInputEditText contrasena = findViewById(R.id.contrasena);
         Button btnSesion = findViewById(R.id.btnSesion);
+
 
         btnSesion.setOnClickListener(v -> {
             String email = correo.getText() != null ? correo.getText().toString().trim() : "";
@@ -47,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
                 contrasena.setError("Por favor, ingresa tu contraseña.");
                 contrasena.requestFocus();
             } else {
+
                 iniciarSesion(email, password);
             }
         });
@@ -58,11 +64,27 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void mostrarProgressDialog() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Iniciando sesión...");
+        progressDialog.setCancelable(false);  // Evitar que se cierre accidentalmente
+        progressDialog.show();
+    }
+    private void ocultarProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
     private void iniciarSesion(String correo, String contrasena) {
+        mostrarProgressDialog();
+
         new Thread(() -> {
-            HashMap<String, Object> respuesta = UsuarioDAO  .logIn(correo, contrasena, LoginActivity.this);
+            HashMap<String, Object> respuesta = UsuarioDAO.logIn(correo, contrasena, LoginActivity.this);
 
             runOnUiThread(() -> {
+                ocultarProgressDialog();
+
                 if ((boolean) respuesta.get("error")) {
                     String mensaje = (String) respuesta.getOrDefault("mensaje", "Error desconocido");
                     Toast.makeText(LoginActivity.this, mensaje, Toast.LENGTH_SHORT).show();

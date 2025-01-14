@@ -1,5 +1,6 @@
 package com.example.myapplication4.ui.perfil;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +31,7 @@ public class ConsultarFragment extends Fragment {
     private TextView carbohidratosInfoTextView;
     private TextView grasasInfoTextView;
     private TextView proteinasInfoTextView;
+    private ProgressDialog progressDialog;
     private Button btnModificarPerfil;
 
     @Override
@@ -68,10 +70,14 @@ public class ConsultarFragment extends Fragment {
         //grasasInfoTextView.setText(String.valueOf(grasas));
         //proteinasInfoTextView.setText(String.valueOf(proteinas));
 
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Cargando..."); // Mensaje de carga
+        progressDialog.setCancelable(false);
+
         btnModificarPerfil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                progressDialog.show();
                 String nombre = nombreInfoTextView.getText().toString();
                 String nombreUsuario = nombreUsuarioInfoTextView.getText().toString();
                 String correo = correoInfoTextView.getText().toString();
@@ -88,6 +94,7 @@ public class ConsultarFragment extends Fragment {
 
 
                 startActivity(intent);
+                progressDialog.dismiss();
             }
         });
 

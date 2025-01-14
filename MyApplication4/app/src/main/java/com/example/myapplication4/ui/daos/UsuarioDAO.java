@@ -1,28 +1,28 @@
 package com.example.myapplication4.ui.daos;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.myapplication4.RegistrarObjetivos;
 import com.example.myapplication4.ui.Utilidades.ApiService;
 import com.example.myapplication4.LoginActivity;
 import com.example.myapplication4.ui.Utilidades.Constantes;
 import com.example.myapplication4.ui.Utilidades.GestorToken;
-import com.example.myapplication4.ui.modelos.RegistroUsuario;
-
 import com.example.myapplication4.ui.modelos.UsuarioMovil;
+import com.example.myapplication4.RegistrarObjetivos;
 import com.example.myapplication4.ui.perfil.Usuario;
 import com.google.gson.JsonObject;
 
 import java.util.HashMap;
 
-import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Call;
 import retrofit2.Response;
+import android.app.ProgressDialog;
+import android.content.Intent;
+
+import android.widget.Toast;
+
+
+import com.example.myapplication4.ui.modelos.RegistroUsuario;
 
 public class UsuarioDAO {
     private ProgressDialog progressDialog;
@@ -41,7 +41,7 @@ public class UsuarioDAO {
             if (response.isSuccessful() && response.body() != null && response.body().has("usuario")) {
                 JsonObject usuarioJson = response.body().getAsJsonObject("usuario");
 
-                // Guardar datos del usuario en variables globales
+
                 Constantes.NOMBRE = usuarioJson.get("nombre").getAsString();
                 Constantes.APELLIDO_PATERNO = usuarioJson.get("apellido_paterno").getAsString();
                 Constantes.APELLIDO_MATERNO = usuarioJson.get("apellido_materno").getAsString();
@@ -53,7 +53,7 @@ public class UsuarioDAO {
 
                     Log.d("UsuarioDAO", "Contenido de 'objetivo': " + objetivoJson.toString());
 
-                    // Asignar calorías y otros valores
+
                     try {
                         Constantes.CALORIAS = objetivoJson.get("calorias").getAsDouble();
                         Constantes.CARBOHIDRATOS = objetivoJson.get("carbohidratos").getAsDouble();

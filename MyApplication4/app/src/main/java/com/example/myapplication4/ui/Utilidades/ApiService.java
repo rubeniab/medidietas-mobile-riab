@@ -13,6 +13,7 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -64,20 +65,23 @@ public class ApiService {
         @POST("api/medidietas/consumos")
         Call<JsonObject> registrarConsumo(@Header("x-token") String token, @Body JsonObject consumo);
 
+        @PUT("api/medidietas/consumos/{id}")
+        Call<JsonObject> modificarConsumo(@Header("x-token") String token, @Path("id") int idConsumo, @Body JsonObject consumoJson);
+
+        @DELETE("api/medidietas/consumos/{id}")
+        Call<ResponseBody> eliminarConsumo(@Header("x-token") String token, @Path("id") int idConsumo);
     }
 
-    // Singleton para Retrofit
+
     private static Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
-    // Crear una instancia de la interfaz
     public static Service getService() {
         return retrofit.create(Service.class);
     }
 
-    // Método auxiliar para los logs
     @OptIn(markerClass = UnstableApi.class)
     public static void logApiResponse(int responseCode, String responseBody) {
         Log.d("API Response", "Response code: " + responseCode);

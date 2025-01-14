@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -326,7 +327,7 @@ public class ConsumoDAO {
         return respuesta;
     }
 
-    public static HashMap<String, Object> modificarConsumo(Context context, int idConsumo, int cantidad, int idMomento) {
+    public static HashMap<String, Object> modificarConsumo(Context context, int idConsumo, double cantidad, int idMomento) {
         HashMap<String, Object> respuesta = new HashMap<>();
         respuesta.put("error", true);
         try {
@@ -350,6 +351,34 @@ public class ConsumoDAO {
                 String errorBody = response.errorBody() != null
                         ? response.errorBody().string() : "Cuerpo de error vacío";
                 respuesta.put("mensaje", "Error al modificar el consumo. " +
+                        "Código de respuesta: " + response.code() + ", Cuerpo de error: " + errorBody);
+            }
+        } catch (Exception e) {
+            respuesta.put("mensaje", "Error: " + e.getMessage());
+            Log.e("ConsumoError", e.getMessage(), e);
+        }
+        return respuesta;
+    }
+
+    public static HashMap<String, Object> eliminarConsumo(Context context, int idConsumo) {
+        HashMap<String, Object> respuesta = new HashMap<>();
+        respuesta.put("error", true);
+        try {
+            String token = GestorToken.TOKEN;
+            if (token == null || token.isEmpty()) {
+                throw new Exception("Token no válido");
+            }
+
+            Call<ResponseBody> call = ApiService.getService().eliminarConsumo(token, idConsumo);
+            Response<ResponseBody> response = call.execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                respuesta.put("error", false);
+                respuesta.put("mensaje", "Consumo eliminado correctamente");
+            } else {
+                String errorBody = response.errorBody() != null
+                        ? response.errorBody().string() : "Cuerpo de error vacío";
+                respuesta.put("mensaje", "Error al eliminar el consumo. " +
                         "Código de respuesta: " + response.code() + ", Cuerpo de error: " + errorBody);
             }
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package com.example.myapplication4.ui.home;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -11,6 +12,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -25,9 +30,11 @@ import com.example.myapplication4.ApiService;
 import com.example.myapplication4.R;
 import com.example.myapplication4.TokenManager;
 import com.example.myapplication4.databinding.FragmentHomeBinding;
+import com.example.myapplication4.ui.Utilidades.Constantes;
 import com.example.myapplication4.ui.daos.ConsumoDAO;
 import com.example.myapplication4.ui.daos.UsuarioDAO;
 import com.example.myapplication4.ui.modelos.ConsumoDiario;
+import com.example.myapplication4.ui.modelos.Momento;
 import com.example.myapplication4.ui.perfil.Usuario;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -54,19 +61,20 @@ public class HomeFragment extends Fragment {
     private TableLayout tableLayout;
     private FragmentHomeBinding binding;
     private List<String[]> datos = new ArrayList<>();
-    List<ConsumoDiario> consumos = new ArrayList<>();
-    double calTotales = 0;
-    double calConsumidas = 0;
-    double calRestantes = 0;
-    double carbsTotales = 0;
-    double carbsConsumidos = 0;
-    double carbsRestantes = 0;
-    double protesTotales = 0;
-    double protesConsumidos = 0;
-    double protesRestantes = 0;
-    double grasasTotales = 0;
-    double grasasConsumidas = 0;
-    double grasasRestantes = 0;
+    private List<ConsumoDiario> consumos = new ArrayList<>();
+    private List<Momento> momentosList = new ArrayList<>();
+    private double calTotales = 0;
+    private double calConsumidas = 0;
+    private double calRestantes = 0;
+    private double carbsTotales = 0;
+    private double carbsConsumidos = 0;
+    private double carbsRestantes = 0;
+    private double protesTotales = 0;
+    private double protesConsumidos = 0;
+    private double protesRestantes = 0;
+    private double grasasTotales = 0;
+    private double grasasConsumidas = 0;
+    private double grasasRestantes = 0;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -82,6 +90,7 @@ public class HomeFragment extends Fragment {
         new Thread(() -> {
             obtenerObjetivos();
             obtenerConsumos();
+            obtenerMomentos();
             calcularConsumos();
 
             getActivity().runOnUiThread(() -> {
@@ -187,7 +196,8 @@ public class HomeFragment extends Fragment {
         tableLayout.addView(headerRow);
 
         // Agrega las filas de datos
-        for (String[] fila : datos) {
+        for (int i = 0; i < datos.size(); i++) {
+            String[] fila = datos.get(i);
             TableRow dataRow = new TableRow(getContext());
             for (String celda : fila) {
                 TextView textView = new TextView(getContext());
@@ -197,8 +207,63 @@ public class HomeFragment extends Fragment {
                 textView.setGravity(Gravity.CENTER); // Centra el texto en cada celda
                 dataRow.addView(textView);
             }
+
+            int finalI = i;
+            dataRow.setOnClickListener(v -> showResumenDialog(consumos.get(finalI)));
+
             tableLayout.addView(dataRow);
         }
+    }
+
+    private void showResumenDialog(ConsumoDiario consumo) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Modificar consumo");
+
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_resumen_consumo, null);
+        builder.setView(dialogView);
+
+        TextView resumenTextView = dialogView.findViewById(R.id.resumen_text_view);
+        resumenTextView.setText("Nombre: " + consumo.getNombre() +
+                "\nRación: " + consumo.getTamano_racion() +
+                "\nCalorías: " + consumo.getCalorias());
+
+        EditText cantidadEditText = dialogView.findViewById(R.id.cantidad_edit_text);
+        cantidadEditText.setText(String.valueOf(consumo.getCantidad()));
+
+        Spinner momentoSpinner = dialogView.findViewById(R.id.momento_spinner);
+        List<String> momentosNombres = new ArrayList<>();
+        for (Momento momento : momentosList) {
+            momentosNombres.add(momento.getNombre());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, momentosNombres);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        momentoSpinner.setAdapter(adapter);
+
+        int momentoIndex = momentosNombres.indexOf(consumo.getMomento());
+        if (momentoIndex != -1) {
+            momentoSpinner.setSelection(momentoIndex);
+        }
+
+        builder.setPositiveButton("Modificar", (dialog, id) -> {
+            int nuevaCantidad = Integer.parseInt(cantidadEditText.getText().toString());
+            int nuevoIdMomento = momentosList.get(momentoSpinner.getSelectedItemPosition()).getId();
+
+            new Thread(() -> {
+                HashMap<String, Object> respuesta = ConsumoDAO.modificarConsumo(getContext(), consumo.getId(), nuevaCantidad, nuevoIdMomento);
+                getActivity().runOnUiThread(() -> {
+                    if (!(boolean) respuesta.get("error")) {
+                        Toast.makeText(getContext(), "Consumo modificado correctamente", Toast.LENGTH_SHORT).show();
+                        obtenerConsumos(); // Actualizar la lista de consumos
+                        cargarTabla(); // Recargar la tabla con los datos actualizados
+                    } else {
+                        Toast.makeText(getContext(), "Error al modificar el consumo: " + respuesta.get("mensaje"), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }).start();
+        });
+        builder.setNegativeButton("Cerrar", (dialog, id) -> dialog.dismiss());
+
+        builder.create().show();
     }
 
     private void obtenerObjetivos(){
@@ -214,11 +279,20 @@ public class HomeFragment extends Fragment {
         // Obtener la fecha actual
         String fechaActual = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().getTime());
 
-        HashMap<String, Object> respuesta = ConsumoDAO.consultarConsumosHoy("skywhite", fechaActual);
+        HashMap<String, Object> respuesta = ConsumoDAO.consultarConsumosHoy(Constantes.NOMBRE_USUARIO, fechaActual);
         if(respuesta.get("error").equals(true)){
             System.out.println(respuesta.get("mensaje"));
         }
         consumos = (List<ConsumoDiario>) respuesta.get("objeto");
+    }
+
+    private void obtenerMomentos() {
+        HashMap<String, Object> respuestaMomentos = ConsumoDAO.obtenerMomentos(getContext());
+        if (!(boolean) respuestaMomentos.get("error")) {
+            momentosList = (List<Momento>) respuestaMomentos.get("objeto");
+        } else {
+            System.out.println("Error: " + respuestaMomentos.get("mensaje"));
+        }
     }
 
     private void calcularConsumos() {
@@ -241,119 +315,8 @@ public class HomeFragment extends Fragment {
         grasasRestantes = grasasTotales - grasasConsumidas;
     }
 
-    public void performLogOut() {
-        // Obtener el servicio de la API desde ApiService
-        ApiService.Service apiService = ApiService.getService(); // Asegúrate de que esta instancia esté bien configurada.
-
-        String token = TokenManager.getToken(getContext());
-        Log.d(TAG, "Token recuperado para logout: " + token);
-
-        if (token == null || token.isEmpty()) {
-            Log.e(TAG, "El token está vacío o es nulo");
-            showToast("Error: No se encontró el token.");
-            return;
-        }
-
-        // Llamada al método logOut
-        Call<ResponseBody> call = apiService.logOut("Bearer " + token);
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    try {
-                        // Leer el cuerpo de la respuesta
-                        String cuerpoRespuesta = response.body().string();
-                        JSONObject respuestaJson = new JSONObject(cuerpoRespuesta);
-                        String mensaje = respuestaJson.optString("msg", "Operación exitosa");
-
-                        Log.i(TAG, "Respuesta exitosa: " + cuerpoRespuesta);
-
-                        // Limpiar datos de sesión y redirigir al LoginActivity
-                        TokenManager.clearToken(getContext());
-
-                        Intent intent = new Intent(getActivity(), LoginActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-
-                        // Mostrar mensaje
-                        showToast(mensaje);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error al procesar la respuesta: ", e);
-                        showToast("Error al procesar la respuesta.");
-                    }
-                } else {
-                    Log.e(TAG, "Error en la respuesta: Código " + response.code());
-                    if (response.errorBody() != null) {
-                        try {
-                            String errorResponse = response.errorBody().string();
-                            Log.e(TAG, "Respuesta de error: " + errorResponse);
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error al leer el cuerpo de la respuesta de error", e);
-                        }
-                    }
-                    showToast("Error al cerrar sesión: " + response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e(TAG, "Error en la conexión: ", t);
-                showToast("Error de conexión: " + t.getMessage());
-            }
-        });
-
-        /*
-        if (token != null) {
-            // Realizar la solicitud de logout al servidor
-            ApiService.Service apiService = RetrofitClient.getInstance().create(ApiService.Service.class);
-            apiService.logOut(token).enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    if (response.isSuccessful()) {
-                        // Limpiar los datos de sesión locales
-                        clearSessionData();
-
-                        // Redirigir al LoginActivity
-                        Intent intent = new Intent(getActivity(), LoginActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Limpiar la pila de actividades
-                        startActivity(intent);
-                        getActivity().finish();
-
-                        // Mostrar mensaje de sesión cerrada
-                        Toast.makeText(getContext(), "Sesión cerrada correctamente", Toast.LENGTH_SHORT).show();
-                    } else {
-                        // Mostrar error si la respuesta no fue exitosa
-                        Toast.makeText(getContext(), "Error al cerrar sesión", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    // Manejar errores de red
-                    Toast.makeText(getContext(), "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            // Si no hay token, simplemente redirige al login
-            clearSessionData();
-            startActivity(new Intent(getActivity(), LoginActivity.class));
-            getActivity().finish();
-        }
-    }*/
-
-
-
-    }
     private void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-    }
-    private void clearSessionData() {
-        SharedPreferences prefs = requireActivity().getSharedPreferences("MyAppPrefs", getContext().MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.clear();  // Eliminar todas las preferencias
-        editor.apply();
-        Log.i(TAG, "Datos de sesión eliminados correctamente.");
     }
 
     public void onDestroyView() {

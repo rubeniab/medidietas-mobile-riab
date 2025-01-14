@@ -1,6 +1,7 @@
 package com.example.myapplication4.ui.modelos;
 
 public class ConsumoDiario {
+    private int id;
     private String nombre;
     private String tamano_racion;
     private double calorias;
@@ -10,7 +11,8 @@ public class ConsumoDiario {
     private double cantidad;
     private String momento;
 
-    public ConsumoDiario(String nombre, String tamano_racion, double calorias, double carbohidratos, double grasas, double proteinas, double cantidad, String momento) {
+    public ConsumoDiario(int id, String nombre, String tamano_racion, double calorias, double carbohidratos, double grasas, double proteinas, double cantidad, String momento) {
+        this.id = id;
         this.nombre = nombre;
         this.tamano_racion = tamano_racion;
         this.calorias = calorias;
@@ -19,6 +21,14 @@ public class ConsumoDiario {
         this.proteinas = proteinas;
         this.cantidad = cantidad;
         this.momento = momento;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNombre() {

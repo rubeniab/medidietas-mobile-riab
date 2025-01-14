@@ -5,10 +5,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Patterns;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,6 +28,7 @@ import com.example.myapplication4.ui.modelos.RegistroUsuario;
 import com.example.myapplication4.ui.modelos.Objetivo;
 import com.example.myapplication4.ui.daos.UsuarioDAO;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -127,12 +130,32 @@ public class RegistrarObjetivos extends AppCompatActivity {
         startActivityForResult(pickPhoto, REQUEST_IMAGE_PICK);
     }
 
+    private String convertirIvAString() {
+        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        return encodedImage;
+    }
+
     private void handleRegistration() {
         if (validateInputs()) {
+
+            String foto = convertirIvAString();
+            String nombreFoto = "";
+            try {
+                nombreFoto = UsuarioDAO.guardarFotoPerfil(nombre_usuario.getText().toString(), "jpeg", foto);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             progressDialog = ProgressDialog.show(this, "Registrando", "Por favor espera...", true, false);
 
             UsuarioMovil usuarioMovil = new UsuarioMovil();
             usuarioMovil.setNombre(nombre.getText().toString());
+            usuarioMovil.setFoto(nombreFoto);
             usuarioMovil.setApellido_paterno(apellido_paterno.getText().toString());
             usuarioMovil.setApellido_materno(apellido_materno.getText().toString());
             usuarioMovil.setNombre_usuario(nombre_usuario.getText().toString());
@@ -142,6 +165,7 @@ public class RegistrarObjetivos extends AppCompatActivity {
             usuarioMovil.setPeso(Double.parseDouble(peso.getText().toString()));
             usuarioMovil.setSexo(spinnerSexo.getSelectedItem().toString().equals("Masculino"));
             usuarioMovil.setFecha_nacimiento(fecha_nacimiento.getText().toString());
+            System.out.println(usuarioMovil.getFecha_nacimiento());
 
             Objetivo objetivo = new Objetivo();
             objetivo.setCalorias(Double.parseDouble(calorias.getText().toString()));

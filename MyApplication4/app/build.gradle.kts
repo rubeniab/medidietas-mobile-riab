@@ -60,6 +60,15 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    sourceSets {
+        sourceSets {
+            getByName("main") {
+                proto {
+                    srcDir("src/main/protos") // Ruta a los archivos .proto
+                }
+            }
+        }
+    }
 }
 
 dependencies {
@@ -85,7 +94,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation("io.grpc:grpc-okhttp:1.68.1")
-    implementation("io.grpc:grpc-protobuf:1.68.1")
+    implementation("io.grpc:grpc-protobuf-lite:1.68.1")
     implementation("io.grpc:grpc-stub:1.68.1")
     compileOnly("org.apache.tomcat:annotations-api:6.0.53")
 }

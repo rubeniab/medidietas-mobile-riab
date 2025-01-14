@@ -13,10 +13,6 @@ public class UsuarioMovil {
     private double estatura;
     private double peso;
     private boolean sexo;
-    private double calorias;
-    private double carbohidratos;
-    private double grasas;
-    private double proteinas;
 
     public int getId() {
         return id;
@@ -112,37 +108,5 @@ public class UsuarioMovil {
 
     public void setFoto(String foto) {
         this.foto = foto;
-    }
-
-    public double getCalorias() {
-        return calorias;
-    }
-
-    public void setCalorias(double calorias) {
-        this.calorias = calorias;
-    }
-
-    public double getCarbohidratos() {
-        return carbohidratos;
-    }
-
-    public void setCarbohidratos(double carbohidratos) {
-        this.carbohidratos = carbohidratos;
-    }
-
-    public double getGrasas() {
-        return grasas;
-    }
-
-    public void setGrasas(double grasas) {
-        this.grasas = grasas;
-    }
-
-    public double getProteinas() {
-        return proteinas;
-    }
-
-    public void setProteinas(double proteinas) {
-        this.proteinas = proteinas;
     }
 }

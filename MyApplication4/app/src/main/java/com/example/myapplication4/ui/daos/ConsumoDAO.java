@@ -3,7 +3,7 @@ package com.example.myapplication4.ui.daos;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.myapplication4.ApiService;
+import com.example.myapplication4.ui.Utilidades.ApiService;
 import com.example.myapplication4.ui.Utilidades.GestorToken;
 import com.example.myapplication4.ui.modelos.Alimento;
 import com.example.myapplication4.ui.modelos.Categoria;

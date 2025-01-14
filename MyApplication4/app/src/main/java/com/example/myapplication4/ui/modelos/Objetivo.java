@@ -1,10 +1,13 @@
-package com.example.myapplication4;
+package com.example.myapplication4.ui.modelos;
 
 public class Objetivo {
     private double calorias;
     private double carbohidratos;
     private double grasas;
     private double proteinas;
+
+    public Objetivo() {
+    }
 
     public double getCalorias() {
         return calorias;
@@ -37,6 +40,4 @@ public class Objetivo {
     public void setProteinas(double proteinas) {
         this.proteinas = proteinas;
     }
-
-    // Getters and setters
 }

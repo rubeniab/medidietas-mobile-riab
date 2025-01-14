@@ -21,9 +21,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myapplication4.LoginActivity;
-import com.example.myapplication4.ApiService;
+import com.example.myapplication4.ui.Utilidades.ApiService;
 import com.example.myapplication4.R;
-import com.example.myapplication4.TokenManager;
+import com.example.myapplication4.ui.Utilidades.TokenManager;
 import com.example.myapplication4.databinding.FragmentHomeBinding;
 import com.example.myapplication4.ui.daos.ConsumoDAO;
 import com.example.myapplication4.ui.daos.UsuarioDAO;

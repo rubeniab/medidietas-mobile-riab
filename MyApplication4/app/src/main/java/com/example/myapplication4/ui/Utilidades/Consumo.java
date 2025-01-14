@@ -1,4 +1,4 @@
-package com.example.myapplication4;
+package com.example.myapplication4.ui.Utilidades;
 
 public class Consumo {
     private String nombre;

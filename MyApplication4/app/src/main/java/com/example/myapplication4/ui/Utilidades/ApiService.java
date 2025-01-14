@@ -1,11 +1,10 @@
-package com.example.myapplication4;
+package com.example.myapplication4.ui.Utilidades;
 
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 
-import com.example.myapplication4.ui.modelos.UsuarioMovil;
-import com.example.myapplication4.ui.perfil.Usuario;
+import com.example.myapplication4.ui.modelos.RegistroUsuario;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -42,7 +41,7 @@ public class ApiService {
         Call<JsonObject> obtenerUsuarioPorNombre(@Path("nombre_usuario") String nombreUsuario, @Header("x-token") String token);
 
         @PUT("api/medidietas/usuarios/{nombre_usuario}")
-        Call<JsonObject> actualizarUsuario(@Path("nombre_usuario") @Header("x-token") String token, @Body JsonObject usuario);
+        Call<JsonObject> actualizarUsuario(@Path("nombre_usuario") String nombreUsuario, @Header("Authorization") String token, @Body JsonObject usuario);
 
         @GET("api/medidietas/alimentos")
         Call<JsonArray> obtenerAlimentos(@Header("x-token") String token);

@@ -1,11 +1,19 @@
 package com.example.myapplication4.ui.daos;
 
-import android.util.Log;
+import static androidx.core.content.ContextCompat.startActivity;
 
-import com.example.myapplication4.ApiService;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.example.myapplication4.RegistrarObjetivos;
+import com.example.myapplication4.ui.Utilidades.ApiService;
 import com.example.myapplication4.LoginActivity;
 import com.example.myapplication4.ui.Utilidades.Constantes;
 import com.example.myapplication4.ui.Utilidades.GestorToken;
+import com.example.myapplication4.ui.modelos.RegistroUsuario;
+
 import com.example.myapplication4.ui.modelos.UsuarioMovil;
 import com.example.myapplication4.ui.perfil.Usuario;
 import com.google.gson.JsonObject;
@@ -13,9 +21,11 @@ import com.google.gson.JsonObject;
 import java.util.HashMap;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class UsuarioDAO {
+    private ProgressDialog progressDialog;
 
     public static HashMap<String, Object> logIn(String correo, String contrasena, LoginActivity context) {
         HashMap<String, Object> respuesta = new HashMap<>();
@@ -133,6 +143,46 @@ public class UsuarioDAO {
         }
         return respuesta;
     }
+
+    public static void registrarUsuario(RegistroUsuario registroUsuario, RegistrarObjetivos context) {
+        ApiService.Service apiService = ApiService.getService();
+        Call<Void> call = apiService.registrarUsuario(registroUsuario);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(context, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show();
+                    context.startActivity(new Intent(context, LoginActivity.class));
+                    context.finish();
+                } else {
+                    Toast.makeText(context, "Error en el registro", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(context, "Error de conexión: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public static void actualizarUsuario(UsuarioMovil usuario, String token, final Callback<JsonObject> callback) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("nombre", usuario.getNombre());
+        jsonObject.addProperty("nombre_usuario", usuario.getNombre_usuario());
+        jsonObject.addProperty("correo", usuario.getCorreo());
+        jsonObject.addProperty("apellido_paterno", usuario.getApellido_paterno());
+        jsonObject.addProperty("apellido_materno", usuario.getApellido_materno());
+
+        Log.d("REQUEST_DATA", "Datos enviados: " + jsonObject.toString());
+        Log.d("Token", "Token enviado: " + token);
+
+        Call<JsonObject> call = ApiService.getService().actualizarUsuario(usuario.getNombre_usuario(), "Bearer " + token, jsonObject);
+        call.enqueue(callback);
+    }
+
+
     /*public static HashMap<String, Object> actualizarUsuario(String nombreUsuario, UsuarioMovil usuario) {
         HashMap<String, Object> respuesta = new HashMap<>();
         respuesta.put("error", true);

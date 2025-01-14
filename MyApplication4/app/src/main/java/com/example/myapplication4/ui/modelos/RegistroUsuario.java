@@ -1,6 +1,4 @@
-package com.example.myapplication4;
-
-import com.example.myapplication4.ui.modelos.UsuarioMovil;
+package com.example.myapplication4.ui.modelos;
 
 public class RegistroUsuario {
     private UsuarioMovil usuarioMovil;
@@ -21,6 +19,4 @@ public class RegistroUsuario {
     public void setObjetivo(Objetivo objetivo) {
         this.objetivo = objetivo;
     }
-
-    // Constructor, getters and setters
 }

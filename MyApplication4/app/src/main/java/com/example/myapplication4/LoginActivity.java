@@ -1,5 +1,6 @@
 package com.example.myapplication4;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,7 +23,7 @@ import java.util.regex.Pattern;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
-
+    private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,12 +58,26 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
+    private void mostrarProgressDialog() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Iniciando sesión...");
+        progressDialog.setCancelable(false);  // Evitar que se cierre accidentalmente
+        progressDialog.show();
+    }
+
+    private void ocultarProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
 
     private void iniciarSesion(String correo, String contrasena) {
+        mostrarProgressDialog();
         new Thread(() -> {
             HashMap<String, Object> respuesta = UsuarioDAO  .logIn(correo, contrasena, LoginActivity.this);
 
             runOnUiThread(() -> {
+                ocultarProgressDialog();
                 if ((boolean) respuesta.get("error")) {
                     String mensaje = (String) respuesta.getOrDefault("mensaje", "Error desconocido");
                     Toast.makeText(LoginActivity.this, mensaje, Toast.LENGTH_SHORT).show();

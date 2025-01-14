@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,70 +14,84 @@ import androidx.fragment.app.Fragment;
 
 import com.example.myapplication4.LoginActivity;
 import com.example.myapplication4.R;
+import com.example.myapplication4.modificarPerfil;
+import com.example.myapplication4.ui.Utilidades.Constantes;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class ConsultarFragment extends Fragment {
 
-    private TextView nombre_UsuarioInfoTextView;
-
-    public ConsultarFragment() {
-        // Constructor vacío
-    }
+    private TextView nombreUsuarioInfoTextView;
+    private TextView nombreInfoTextView;
+    private TextView correoInfoTextView;
+    private TextView apellido_paternoTextView;
+    private TextView apellido_maternoTextView;
+    private TextView caloriasInfoTextView;
+    private TextView carbohidratosInfoTextView;
+    private TextView grasasInfoTextView;
+    private TextView proteinasInfoTextView;
+    private Button btnModificarPerfil;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflar el layout del fragmento
         View rootView = inflater.inflate(R.layout.fragment_gallery, container, false);
 
-        // Inicializar vistas
-        nombre_UsuarioInfoTextView = rootView.findViewById(R.id.nombre_usuarioInfoTextView);
+        nombreUsuarioInfoTextView = rootView.findViewById(R.id.nombre_usuarioInfoTextView);
+        nombreInfoTextView = rootView.findViewById(R.id.nombreInfoTextView);
+        correoInfoTextView = rootView.findViewById(R.id.correoInfoTextView);
+        apellido_paternoTextView = rootView.findViewById(R.id.apellido_paternoTextView);
+        apellido_maternoTextView = rootView.findViewById(R.id.apellido_maternoTextView);
+        //caloriasInfoTextView = rootView.findViewById(R.id.caloriasInfoTextView);
+        //carbohidratosInfoTextView = rootView.findViewById(R.id.carbohidratosInfoTextView);
+        //grasasInfoTextView = rootView.findViewById(R.id.grasasInfoTextView);
+        //proteinasInfoTextView = rootView.findViewById(R.id.proteinasInfoTextView);
+        btnModificarPerfil = rootView.findViewById(R.id.btnModificarPerfil);
 
-        // Obtener datos del argumento
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            String usuarioJsonString = arguments.getString("usuario");
-            Log.d("UsuarioJson", "JSON recibido: " + usuarioJsonString);
+        String nombre = Constantes.NOMBRE;
+        String nombreUsuario = Constantes.NOMBRE_USUARIO;
+        String correo = Constantes.CORREO;
+        String apellido_paterno = Constantes.APELLIDO_PATERNO;
+        String apellido_materno = Constantes.APELLIDO_MATERNO;
 
-            if (usuarioJsonString != null) {
-                JsonObject usuarioJson = new JsonParser().parse(usuarioJsonString).getAsJsonObject();
+        Double calorias = Constantes.CALORIAS;
+        Double carbohidratos = Constantes.CARBOHIDRATOS;
+        Double grasas = Constantes.GRASAS;
+        Double proteinas = Constantes.PROTEINAS;
 
-                Log.d("UsuarioJson", "Contenido del JSON: " + usuarioJson.toString());
+        nombreInfoTextView.setText(nombre);
+        nombreUsuarioInfoTextView.setText(nombreUsuario);
+        apellido_paternoTextView.setText(apellido_paterno);
+        apellido_maternoTextView.setText(apellido_materno);
+        correoInfoTextView.setText(correo);
+        //caloriasInfoTextView.setText(String.valueOf(calorias));
+        //carbohidratosInfoTextView.setText(String.valueOf(carbohidratos));
+        //grasasInfoTextView.setText(String.valueOf(grasas));
+        //proteinasInfoTextView.setText(String.valueOf(proteinas));
 
-                mostrarInformacionUsuario(usuarioJson);
-            } else {
-                nombre_UsuarioInfoTextView.setText("No se pudo cargar la información del usuario.");
+        btnModificarPerfil.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String nombre = nombreInfoTextView.getText().toString();
+                String nombreUsuario = nombreUsuarioInfoTextView.getText().toString();
+                String correo = correoInfoTextView.getText().toString();
+                String apellidoPaterno = apellido_paternoTextView.getText().toString();
+                String apellidoMaterno = apellido_maternoTextView.getText().toString();
+
+                Intent intent = new Intent(getActivity(), modificarPerfil.class);
+
+                intent.putExtra("nombre", nombre);
+                intent.putExtra("nombreUsuario", nombreUsuario);
+                intent.putExtra("correo", correo);
+                intent.putExtra("apellido_paterno", apellidoPaterno);
+                intent.putExtra("apellido_materno", apellidoMaterno);
+
+
+                startActivity(intent);
             }
-        }
+        });
 
         return rootView;
     }
 
-    private void mostrarInformacionUsuario(JsonObject usuarioJson) {
-        // Verificar si los campos existen y obtener sus valores
-        String nombre = usuarioJson.has("nombre") && !usuarioJson.get("nombre").isJsonNull()
-                ? usuarioJson.get("nombre").getAsString()
-                : "Nombre no disponible";
-
-        String apellidoPaterno = usuarioJson.has("apellido_paterno") && !usuarioJson.get("apellido_paterno").isJsonNull()
-                ? usuarioJson.get("apellido_paterno").getAsString()
-                : "Apellido paterno no disponible";
-
-        String correo = usuarioJson.has("correo") && !usuarioJson.get("correo").isJsonNull()
-                ? usuarioJson.get("correo").getAsString()
-                : "Correo no disponible";
-
-        // Ajustar la cadena de información con los datos obtenidos
-        String info = "Nombre: " + nombre + "\nApellido: " + apellidoPaterno + "\nCorreo: " + correo;
-        nombre_UsuarioInfoTextView.setText(info);
-    }
-
-    private void cerrarSesion() {
-        // Implementa la lógica para cerrar la sesión aquí
-        Toast.makeText(getContext(), "Sesión cerrada correctamente", Toast.LENGTH_SHORT).show();
-        // Redirigir al usuario a la pantalla de inicio de sesión (LoginActivity)
-        Intent intent = new Intent(getActivity(), LoginActivity.class);
-        startActivity(intent);
-        getActivity().finish(); // Cerrar la actividad actual
-    }
 }

@@ -1,10 +1,10 @@
-package com.example.myapplication4;
+package com.example.myapplication4.ui.Utilidades;
 
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 
-import com.example.myapplication4.ui.perfil.Usuario;
+import com.example.myapplication4.ui.modelos.RegistroUsuario;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -13,11 +13,12 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
-import retrofit2.http.HTTP;
+import retrofit2.http.DELETE;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.GET;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public class ApiService {
@@ -40,6 +41,9 @@ public class ApiService {
         @GET("api/medidietas/usuarios/{nombre_usuario}")
         Call<JsonObject> obtenerUsuarioPorNombre(@Path("nombre_usuario") String nombreUsuario, @Header("x-token") String token);
 
+        @PUT("api/medidietas/usuarios/{nombre_usuario}")
+        Call<JsonObject> actualizarUsuario(@Path("nombre_usuario") String nombreUsuario, @Header("Authorization") String token, @Body JsonObject usuario);
+
         @GET("api/medidietas/alimentos")
         Call<JsonArray> obtenerAlimentos(@Header("x-token") String token);
 
@@ -61,6 +65,11 @@ public class ApiService {
         @POST("api/medidietas/consumos")
         Call<JsonObject> registrarConsumo(@Header("x-token") String token, @Body JsonObject consumo);
 
+        @PUT("api/medidietas/consumos/{id}")
+        Call<JsonObject> modificarConsumo(@Header("x-token") String token, @Path("id") int idConsumo, @Body JsonObject consumoJson);
+
+        @DELETE("api/medidietas/consumos/{id}")
+        Call<ResponseBody> eliminarConsumo(@Header("x-token") String token, @Path("id") int idConsumo);
     }
 
     // Singleton para Retrofit

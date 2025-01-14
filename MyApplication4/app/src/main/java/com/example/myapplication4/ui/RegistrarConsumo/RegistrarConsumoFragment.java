@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.example.myapplication4.R;
+import com.example.myapplication4.ui.Utilidades.Constantes;
 import com.example.myapplication4.ui.daos.ConsumoDAO;
 import com.example.myapplication4.ui.modelos.Alimento;
 import com.example.myapplication4.ui.modelos.Categoria;
@@ -301,7 +302,7 @@ public class RegistrarConsumoFragment extends Fragment {
                 String fechaActual = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
                 // Crear el objeto Consumo
-                Consumo consumo = new Consumo(fechaActual, cantidadConsumo, idMomentoSeleccionado, comida.getId(), 1);
+                Consumo consumo = new Consumo(fechaActual, cantidadConsumo, idMomentoSeleccionado, comida.getId(), Constantes.ID_USUARIO);
 
                 // Registrar el consumo
                 new Thread(() -> {

@@ -3,7 +3,7 @@ package com.example.myapplication4.ui.daos;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.myapplication4.ApiService;
+import com.example.myapplication4.ui.Utilidades.ApiService;
 import com.example.myapplication4.ui.Utilidades.GestorToken;
 import com.example.myapplication4.ui.modelos.Alimento;
 import com.example.myapplication4.ui.modelos.Categoria;
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -296,6 +297,7 @@ public class ConsumoDAO {
                 for (int i = 0; i < consumosJson.size(); i++) {
                     JsonObject jsonObject = (JsonObject) consumosJson.get(i);
 
+                    int id = jsonObject.get("id").getAsInt();
                     String nombre = jsonObject.get("nombre").getAsString();
                     String tamanoRacion = jsonObject.get("tamano_racion").getAsString();
                     double calorias = jsonObject.get("calorias").getAsDouble();
@@ -305,7 +307,7 @@ public class ConsumoDAO {
                     double cantidad = jsonObject.get("cantidad").getAsDouble();
                     String momento = jsonObject.get("momento").getAsString();
 
-                    ConsumoDiario consumo = new ConsumoDiario(nombre, tamanoRacion, calorias, carbohidratos, grasas, proteinas, cantidad, momento);
+                    ConsumoDiario consumo = new ConsumoDiario(id, nombre, tamanoRacion, calorias, carbohidratos, grasas, proteinas, cantidad, momento);
                     consumosDia.add(consumo);
                 }
 
@@ -317,6 +319,67 @@ public class ConsumoDAO {
                         response.errorBody().string() : "Cuerpo de error vacío";
                 respuesta.put("mensaje", "Error al obtener los consumos. Código de respuesta: "
                         + response.code() + ", Cuerpo de error: " + errorBody);
+            }
+        } catch (Exception e) {
+            respuesta.put("mensaje", "Error: " + e.getMessage());
+            Log.e("ConsumoError", e.getMessage(), e);
+        }
+        return respuesta;
+    }
+
+    public static HashMap<String, Object> modificarConsumo(Context context, int idConsumo, double cantidad, int idMomento) {
+        HashMap<String, Object> respuesta = new HashMap<>();
+        respuesta.put("error", true);
+        try {
+            String token = GestorToken.TOKEN;
+            if (token == null || token.isEmpty()) {
+                throw new Exception("Token no válido");
+            }
+
+            JsonObject consumoJson = new JsonObject();
+            consumoJson.addProperty("cantidad", cantidad);
+            consumoJson.addProperty("id_momento", idMomento);
+
+            // Llamar al servicio API para modificar el consumo
+            Call<JsonObject> call = ApiService.getService().modificarConsumo(token, idConsumo, consumoJson);
+            Response<JsonObject> response = call.execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                respuesta.put("error", false);
+                respuesta.put("mensaje", "Consumo modificado correctamente");
+            } else {
+                String errorBody = response.errorBody() != null
+                        ? response.errorBody().string() : "Cuerpo de error vacío";
+                respuesta.put("mensaje", "Error al modificar el consumo. " +
+                        "Código de respuesta: " + response.code() + ", Cuerpo de error: " + errorBody);
+            }
+        } catch (Exception e) {
+            respuesta.put("mensaje", "Error: " + e.getMessage());
+            Log.e("ConsumoError", e.getMessage(), e);
+        }
+        return respuesta;
+    }
+
+    public static HashMap<String, Object> eliminarConsumo(Context context, int idConsumo) {
+        HashMap<String, Object> respuesta = new HashMap<>();
+        respuesta.put("error", true);
+        try {
+            String token = GestorToken.TOKEN;
+            if (token == null || token.isEmpty()) {
+                throw new Exception("Token no válido");
+            }
+
+            Call<ResponseBody> call = ApiService.getService().eliminarConsumo(token, idConsumo);
+            Response<ResponseBody> response = call.execute();
+
+            if (response.isSuccessful() && response.body() != null) {
+                respuesta.put("error", false);
+                respuesta.put("mensaje", "Consumo eliminado correctamente");
+            } else {
+                String errorBody = response.errorBody() != null
+                        ? response.errorBody().string() : "Cuerpo de error vacío";
+                respuesta.put("mensaje", "Error al eliminar el consumo. " +
+                        "Código de respuesta: " + response.code() + ", Cuerpo de error: " + errorBody);
             }
         } catch (Exception e) {
             respuesta.put("mensaje", "Error: " + e.getMessage());

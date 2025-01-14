@@ -1,4 +1,4 @@
-package com.example.myapplication4;
+package com.example.myapplication4.ui.Utilidades;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.myapplication4.R;
 
 import java.util.List;
 

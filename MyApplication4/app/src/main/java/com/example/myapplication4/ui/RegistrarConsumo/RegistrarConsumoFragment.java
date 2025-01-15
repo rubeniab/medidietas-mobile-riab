@@ -1,6 +1,7 @@
 package com.example.myapplication4.ui.RegistrarConsumo;
 
 import android.app.AlertDialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -32,6 +33,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 public class RegistrarConsumoFragment extends Fragment {
 
@@ -207,14 +214,7 @@ public class RegistrarConsumoFragment extends Fragment {
         TextView resumenTextView = dialogView.findViewById(R.id.resumen_text_view);
         resumenTextView.setText("Nombre: " + alimento.getNombre() +
                 "\nRación: " + alimento.getTamanoRacion() + " " + unidadesMedidaMap.getOrDefault(alimento.getIdUnidadMedida(), "Desconocido") +
-                "\nCalorías: " + alimento.getCalorias() +
-                "\nCarbohidratos: " + alimento.getCarbohidratos() +
-                "\nGrasas: " + alimento.getGrasas() +
-                "\nProteínas: " + alimento.getProteinas() +
-                "\nTamaño de ración: " + alimento.getTamanoRacion() +
-                "\nUnidad de medida: " + unidadesMedidaMap.getOrDefault(alimento.getIdUnidadMedida(), "Desconocido") +
-                "\nMarca: " + alimento.getMarca() +
-                "\nCategoría: " + categoriasMap.getOrDefault(alimento.getIdCategoria(), "Desconocido"));
+                "\nCalorías: " + alimento.getCalorias());
 
         // Configurar el EditText para la cantidad
         EditText cantidadEditText = dialogView.findViewById(R.id.cantidad_edit_text);
@@ -228,6 +228,30 @@ public class RegistrarConsumoFragment extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, momentosNombres);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         momentoSpinner.setAdapter(adapter);
+
+        // Configurar la gráfica de nutrientes
+        PieChart nutrientesChart = dialogView.findViewById(R.id.nutrientesChart);
+        List<PieEntry> nutrientesEntries = new ArrayList<>();
+        nutrientesEntries.add(new PieEntry((float) alimento.getCarbohidratos(), "Carbohidratos"));
+        nutrientesEntries.add(new PieEntry((float) alimento.getGrasas(), "Grasas"));
+        nutrientesEntries.add(new PieEntry((float) alimento.getProteinas(), "Proteínas"));
+
+        PieDataSet nutrientesSet = new PieDataSet(nutrientesEntries, "Nutrientes");
+        nutrientesSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        nutrientesSet.setValueTextSize(10f);
+        nutrientesSet.setValueTextColor(Color.BLACK); // Establecer el color del texto a negro
+        nutrientesSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        nutrientesSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        PieData nutrientesData = new PieData(nutrientesSet);
+        nutrientesChart.setData(nutrientesData);
+        nutrientesChart.getDescription().setEnabled(false);
+        nutrientesChart.animateY(500);
+        nutrientesChart.setCenterText("Nutrientes (g)");
+        nutrientesChart.setCenterTextSize(10f);
+        nutrientesChart.setCenterTextColor(Color.BLACK);
+        nutrientesChart.getLegend().setTextColor(Color.BLACK);
+        nutrientesChart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        nutrientesChart.invalidate();
 
         builder.setPositiveButton("Agregar", (dialog, id) -> {
             String cantidadStr = cantidadEditText.getText().toString();
@@ -272,11 +296,7 @@ public class RegistrarConsumoFragment extends Fragment {
         // Configurar los TextViews
         TextView resumenTextView = dialogView.findViewById(R.id.resumen_text_view);
         resumenTextView.setText("Nombre: " + comida.getNombre() +
-                "\nCalorías: " + comida.getCalorias() +
-                "\nCarbohidratos: " + comida.getCarbohidratos() +
-                "\nGrasas: " + comida.getGrasas() +
-                "\nProteínas: " + comida.getProteinas() +
-                "\nReceta: " + comida.getReceta());
+                "\nCalorías: " + comida.getCalorias());
 
         // Configurar el EditText para la cantidad
         EditText cantidadEditText = dialogView.findViewById(R.id.cantidad_edit_text);
@@ -290,6 +310,30 @@ public class RegistrarConsumoFragment extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, momentosNombres);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         momentoSpinner.setAdapter(adapter);
+
+        // Configurar la gráfica de nutrientes
+        PieChart nutrientesChart = dialogView.findViewById(R.id.nutrientesChart);
+        List<PieEntry> nutrientesEntries = new ArrayList<>();
+        nutrientesEntries.add(new PieEntry((float) comida.getCarbohidratos(), "Carbohidratos"));
+        nutrientesEntries.add(new PieEntry((float) comida.getGrasas(), "Grasas"));
+        nutrientesEntries.add(new PieEntry((float) comida.getProteinas(), "Proteínas"));
+
+        PieDataSet nutrientesSet = new PieDataSet(nutrientesEntries, "Nutrientes");
+        nutrientesSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        nutrientesSet.setValueTextSize(10f);
+        nutrientesSet.setValueTextColor(Color.BLACK); // Establecer el color del texto a negro
+        nutrientesSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        nutrientesSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        PieData nutrientesData = new PieData(nutrientesSet);
+        nutrientesChart.setData(nutrientesData);
+        nutrientesChart.getDescription().setEnabled(false);
+        nutrientesChart.animateY(500);
+        nutrientesChart.setCenterText("Nutrientes (g)");
+        nutrientesChart.setCenterTextSize(10f);
+        nutrientesChart.setCenterTextColor(Color.BLACK);
+        nutrientesChart.getLegend().setTextColor(Color.BLACK);
+        nutrientesChart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        nutrientesChart.invalidate();
 
         builder.setPositiveButton("Agregar", (dialog, id) -> {
             String cantidadStr = cantidadEditText.getText().toString();

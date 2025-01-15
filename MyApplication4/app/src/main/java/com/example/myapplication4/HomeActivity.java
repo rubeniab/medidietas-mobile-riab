@@ -1,10 +1,14 @@
 package com.example.myapplication4;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +22,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.myapplication4.databinding.ActivityHomeBinding;
 import com.example.myapplication4.ui.Utilidades.Constantes;
+import com.example.myapplication4.ui.daos.UsuarioDAO;
 import com.google.android.material.navigation.NavigationView;
 
 public class HomeActivity extends AppCompatActivity {
@@ -48,7 +53,8 @@ public class HomeActivity extends AppCompatActivity {
         View headerView = navigationView.getHeaderView(0);
         TextView navHeaderTitle = headerView.findViewById(R.id.nav_header_title);
         TextView navHeaderSubtitle = headerView.findViewById(R.id.nav_header_subtitle);
-
+        ImageView fotoPerfilView = headerView.findViewById(R.id.imageView);
+        fotoPerfilView.setImageBitmap(cargarFotoPerfil());
         navHeaderTitle.setText(Constantes.NOMBRE_USUARIO);
         navHeaderSubtitle.setText(Constantes.CORREO);
 
@@ -103,7 +109,16 @@ public class HomeActivity extends AppCompatActivity {
         getSharedPreferences("MyAppPrefs", MODE_PRIVATE).edit().clear().apply();
     }
 
-    private void prueba() {
+    private Bitmap cargarFotoPerfil() {
+        Bitmap bM = null;
+        try {
+            String imagenString = UsuarioDAO.recuperarFotoPerfil(Constantes.FOTO);
+            byte[] decodedString = Base64.decode(imagenString, Base64.DEFAULT);
+            bM = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        return bM;
     }
 }

@@ -12,7 +12,7 @@ public class Constantes {
     public static double GRASAS;
     public static double PROTEINAS;
 
-    public static final String IP = "10.0.2.2";
+    public static final String IP = "192.168.0.253";
     public static final String PUERTO_API_REST_DOCKER = "8081";
     public static final String PUERTO_API_REST_LOCAL = "8086";
     public static final int PUERTO_API_GRPC_DOCKER = 50051;

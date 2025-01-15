@@ -98,4 +98,3 @@ dependencies {
     implementation("io.grpc:grpc-stub:1.68.1")
     compileOnly("org.apache.tomcat:annotations-api:6.0.53")
 }
-

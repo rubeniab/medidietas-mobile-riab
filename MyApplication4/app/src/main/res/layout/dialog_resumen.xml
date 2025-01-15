@@ -45,4 +45,17 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_marginTop="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Video para preparación:"
+        android:textSize="14sp"
+        android:paddingTop="8dp" />
+
+    <WebView
+        android:id="@+id/video_web_view"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp" />
 </LinearLayout>

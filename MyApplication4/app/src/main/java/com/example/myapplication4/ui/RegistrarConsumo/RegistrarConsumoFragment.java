@@ -8,6 +8,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -19,6 +22,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.myapplication4.R;
 import com.example.myapplication4.ui.Utilidades.Constantes;
+import com.example.myapplication4.ui.Utilidades.ConversorUrlYoutube;
 import com.example.myapplication4.ui.daos.ConsumoDAO;
 import com.example.myapplication4.ui.modelos.Alimento;
 import com.example.myapplication4.ui.modelos.Categoria;
@@ -334,6 +338,16 @@ public class RegistrarConsumoFragment extends Fragment {
         nutrientesChart.getLegend().setTextColor(Color.BLACK);
         nutrientesChart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         nutrientesChart.invalidate();
+
+        // Configurar el WebView para el video
+        WebView videoWebView = dialogView.findViewById(R.id.video_web_view);
+        
+
+        String videoUrl = comida.getPreparacionVideo();
+        if (videoUrl != null && !videoUrl.isEmpty()) {
+            String videoUrlConvertida = ConversorUrlYoutube.convertirUrl(videoUrl);
+            videoWebView.loadUrl(videoUrlConvertida);
+        }
 
         builder.setPositiveButton("Agregar", (dialog, id) -> {
             String cantidadStr = cantidadEditText.getText().toString();

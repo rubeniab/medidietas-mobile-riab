@@ -161,6 +161,7 @@ public class UsuarioDAO {
                     context.finish();
                 } else {
                     Toast.makeText(context, "Error en el registro", Toast.LENGTH_SHORT).show();
+
                 }
             }
 

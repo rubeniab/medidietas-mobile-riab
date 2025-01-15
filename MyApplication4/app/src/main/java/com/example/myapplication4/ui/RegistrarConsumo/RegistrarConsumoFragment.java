@@ -341,7 +341,11 @@ public class RegistrarConsumoFragment extends Fragment {
 
         // Configurar el WebView para el video
         WebView videoWebView = dialogView.findViewById(R.id.video_web_view);
-        
+        videoWebView.getSettings().setJavaScriptEnabled(true);
+        videoWebView.getSettings().setMediaPlaybackRequiresUserGesture(false); // Habilitar la reproducción de medios
+        videoWebView.getSettings().setDomStorageEnabled(true);
+        videoWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        videoWebView.setWebChromeClient(new WebChromeClient()); // Habilitar WebChromeClient para la reproducción de video
 
         String videoUrl = comida.getPreparacionVideo();
         if (videoUrl != null && !videoUrl.isEmpty()) {

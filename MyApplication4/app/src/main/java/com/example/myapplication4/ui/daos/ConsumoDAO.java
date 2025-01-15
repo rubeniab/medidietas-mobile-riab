@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.myapplication4.ui.Utilidades.ApiService;
+import com.example.myapplication4.ui.Utilidades.Constantes;
 import com.example.myapplication4.ui.Utilidades.GestorToken;
 import com.example.myapplication4.ui.modelos.Alimento;
 import com.example.myapplication4.ui.modelos.Categoria;
@@ -19,6 +20,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import imageService.FoodImageServiceGrpc;
+import imageService.ImageService;
+import imageService.ProfileImageServiceGrpc;
+import io.grpc.ManagedChannelBuilder;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -386,5 +391,19 @@ public class ConsumoDAO {
             Log.e("ConsumoError", e.getMessage(), e);
         }
         return respuesta;
+    }
+
+    public static String recuperarFotoAlimento(String nombreFoto) throws Exception {
+        FoodImageServiceGrpc.FoodImageServiceBlockingStub stub =
+                FoodImageServiceGrpc.newBlockingStub(ManagedChannelBuilder.
+                        forAddress(Constantes.IP, Constantes.PUERTO_API_GRPC_DOCKER).usePlaintext().build());
+
+        ImageService.DownloadImageRequest solicitud = ImageService.DownloadImageRequest.newBuilder()
+                .setName(nombreFoto)
+                .build();
+        System.out.println("Nombre de la imagen: " + solicitud.getName());
+        ImageService.DownloadImageResponse respuesta = stub.downloadFoodImage(solicitud);
+
+        return respuesta.getImageData();
     }
 }

@@ -1,10 +1,13 @@
 package com.example.myapplication4.ui.RegistrarConsumo;
 
 import android.app.AlertDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -185,10 +189,23 @@ public class RegistrarConsumoFragment extends Fragment {
 
             int finalI = i;
             row.setOnClickListener(v -> {
-                if (fila[3].equals("Comida")) {
-                    showResumenDialogComida(comidasList.get(finalI - alimentosList.size()));
+                String categoria = fila[3];
+                if (categoria.equals("Comida")) {
+                    Comida comida = comidasList.stream()
+                            .filter(c -> c.getNombre().equals(fila[0]))
+                            .findFirst()
+                            .orElse(null);
+                    if (comida != null) {
+                        showResumenDialogComida(comida);
+                    }
                 } else {
-                    showResumenDialog(alimentosList.get(finalI));
+                    Alimento alimento = alimentosList.stream()
+                            .filter(a -> a.getNombre().equals(fila[0]))
+                            .findFirst()
+                            .orElse(null);
+                    if (alimento != null) {
+                        showResumenDialog(alimento);
+                    }
                 }
             });
 
@@ -214,10 +231,27 @@ public class RegistrarConsumoFragment extends Fragment {
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_resumen_alimento, null);
         builder.setView(dialogView);
 
+        // Configurar el ImageView para la imagen del alimento
+        ImageView alimentoImageView = dialogView.findViewById(R.id.alimento_image_view);
+        new Thread(() -> {
+            try {
+                String imagenString = ConsumoDAO.recuperarFotoAlimento(alimento.getImagen());
+                byte[] decodedString = Base64.decode(imagenString, Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                getActivity().runOnUiThread(() -> alimentoImageView.setImageBitmap(bitmap));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
         // Configurar los TextViews
         TextView resumenTextView = dialogView.findViewById(R.id.resumen_text_view);
+        String unidadMedida = unidadesMedidaMap.getOrDefault(alimento.getIdUnidadMedida(), "Desconocido");
+        if (alimento.getTamanoRacion() > 1) {
+            unidadMedida += "s";
+        }
         resumenTextView.setText("Nombre: " + alimento.getNombre() +
-                "\nRación: " + alimento.getTamanoRacion() + " " + unidadesMedidaMap.getOrDefault(alimento.getIdUnidadMedida(), "Desconocido") +
+                "\nRación: " + alimento.getTamanoRacion() + " " + unidadMedida +
                 "\nCalorías: " + alimento.getCalorias());
 
         // Configurar el EditText para la cantidad

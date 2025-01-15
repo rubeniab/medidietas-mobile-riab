@@ -211,7 +211,7 @@ public class RegistrarConsumoFragment extends Fragment {
         builder.setTitle("Resumen");
 
         // Crear un layout para el diálogo
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_resumen, null);
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_resumen_alimento, null);
         builder.setView(dialogView);
 
         // Configurar los TextViews
@@ -268,7 +268,7 @@ public class RegistrarConsumoFragment extends Fragment {
                 String fechaActual = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
                 // Crear el objeto Consumo
-                Consumo consumo = new Consumo(fechaActual, cantidadConsumo, idMomentoSeleccionado, alimento.getId(), 1);
+                Consumo consumo = new Consumo(fechaActual, cantidadConsumo, idMomentoSeleccionado, alimento.getId(), Constantes.ID_USUARIO);
 
                 // Registrar el consumo
                 new Thread(() -> {

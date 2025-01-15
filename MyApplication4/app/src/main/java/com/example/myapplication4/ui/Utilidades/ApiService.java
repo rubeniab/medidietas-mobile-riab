@@ -23,11 +23,7 @@ import retrofit2.http.Path;
 
 public class ApiService {
 
-//<<<<<<< HEAD
-    //private static final String BASE_URL = "http://10.0.2.2:8081/";
-//=======
-    private static final String BASE_URL = "http://192.168.0.253:8081/";
-//>>>>>>> 32e28dc043b67d377d7f45f1ca95a4df11173b19
+    private static final String BASE_URL = "http://10.0.2.2:8086/";
 
     // Interfaz para las llamadas a la API
     public interface Service {

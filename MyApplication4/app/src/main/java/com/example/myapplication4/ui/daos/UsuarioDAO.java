@@ -51,6 +51,7 @@ public class UsuarioDAO {
                 Constantes.APELLIDO_MATERNO = usuarioJson.get("apellido_materno").getAsString();
                 Constantes.NOMBRE_USUARIO = usuarioJson.get("nombre_usuario").getAsString();
                 Constantes.CORREO = usuarioJson.get("correo").getAsString();
+                Constantes.FOTO = usuarioJson.get("foto").getAsString();
 
                 if (usuarioJson.has("objetivo")) {
                     JsonObject objetivoJson = usuarioJson.getAsJsonObject("objetivo");
@@ -186,6 +187,20 @@ public class UsuarioDAO {
 
         System.out.println(respuesta.getImageName());
         return respuesta.getImageName();
+    }
+
+    public static String recuperarFotoPerfil(String nombreFoto) throws Exception {
+        ProfileImageServiceGrpc.ProfileImageServiceBlockingStub stub =
+                ProfileImageServiceGrpc.newBlockingStub(ManagedChannelBuilder.
+                        forAddress(Constantes.IP, Constantes.PUERTO_API_GRPC_DOCKER).usePlaintext().build());
+
+        ImageService.DownloadImageRequest solicitud = ImageService.DownloadImageRequest.newBuilder()
+                .setName(nombreFoto)
+                .build();
+        System.out.println("Nombre de la imagen: " + solicitud.getName());
+        ImageService.DownloadImageResponse respuesta = stub.downloadProfileImage(solicitud);
+
+        return respuesta.getImageData();
     }
 
     public static void actualizarUsuario(UsuarioMovil usuario, String token, final Callback<JsonObject> callback) {

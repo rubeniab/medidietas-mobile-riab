@@ -6,6 +6,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.app.ProgressDialog;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -60,10 +61,17 @@ public class RegistrarConsumoFragment extends Fragment {
         tableLayout = view.findViewById(R.id.tableLayout);
         searchBar = view.findViewById(R.id.search_bar);
 
+<<<<<<< Updated upstream
+=======
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Cargando datos...");
+        progressDialog.setCancelable(false);
+>>>>>>> Stashed changes
         progressDialog.show();
 
         new Thread(() -> {
             // Obtener categorías
+            boolean apiError = false;
             HashMap<String, Object> respuestaCategorias = ConsumoDAO.obtenerCategorias(getContext());
             if (!(boolean) respuestaCategorias.get("error")) {
                 List<Categoria> categorias = (List<Categoria>) respuestaCategorias.get("objeto");
@@ -72,6 +80,7 @@ public class RegistrarConsumoFragment extends Fragment {
                 }
             } else {
                 System.out.println("Error: " + respuestaCategorias.get("mensaje"));
+                apiError = true;
             }
 
             // Obtener unidades de medida
@@ -105,6 +114,7 @@ public class RegistrarConsumoFragment extends Fragment {
                     alimentosList.add(alimento);
                 }
             } else {
+                apiError = true;
                 System.out.println("Error: " + respuestaAlimentos.get("mensaje"));
             }
 
@@ -122,6 +132,7 @@ public class RegistrarConsumoFragment extends Fragment {
                     comidasList.add(comida);
                 }
             } else {
+                apiError = true;
                 System.out.println("Error: " + respuestaComidas.get("mensaje"));
             }
 
@@ -130,13 +141,29 @@ public class RegistrarConsumoFragment extends Fragment {
             if (!(boolean) respuestaMomentos.get("error")) {
                 momentosList = (List<Momento>) respuestaMomentos.get("objeto");
             } else {
-                System.out.println("Error: " + respuestaMomentos.get("mensaje"));
+                apiError = true;
             }
 
+<<<<<<< Updated upstream
             // Actualizar la UI en el hilo principal
             getActivity().runOnUiThread(() -> {
                 progressDialog.dismiss();
                 cargarTabla(datos);
+=======
+            boolean finalApiError = apiError;
+            getActivity().runOnUiThread(() -> {
+                if (finalApiError) {
+                    progressDialog.dismiss();
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Error de conexión")
+                            .setMessage("No se pudo conectar a el servidor. Por favor, inténtelo más tarde.")
+                            .setPositiveButton("Aceptar", null)
+                            .show();
+                } else {
+                    cargarTabla(datos);
+                    progressDialog.dismiss();
+                }
+>>>>>>> Stashed changes
             });
         }).start();
 

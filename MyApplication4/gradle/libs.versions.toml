@@ -1,5 +1,14 @@
 [versions]
 agp = "8.5.1"
+<<<<<<< Updated upstream
+=======
+annotationsApi = "6.0.53"
+gradle = "7.0.4"
+grpcOkhttp = "1.69.0"
+grpcOkhttpVersion = "1.41.0"
+grpcStub = "1.25.0"
+javaxAnnotationApi = "1.3.2"
+>>>>>>> Stashed changes
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"

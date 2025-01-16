@@ -22,8 +22,17 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public class ApiService {
+<<<<<<< Updated upstream
 
     private static final String BASE_URL = "http://10.0.2.2:8086/";
+=======
+//<<<<<<< HEAD
+    private static final String BASE_URL = "http://10.0.2.2:8081/";
+//=======
+    //private static final String BASE_URL = "http://192.168.0.253:8081/";
+//>>>>>>> 32e28dc043b67d377d7f45f1ca95a4df11173b19
+>>>>>>> Stashed changes
+
 
     // Interfaz para las llamadas a la API
     public interface Service {
@@ -42,7 +51,7 @@ public class ApiService {
         Call<JsonObject> obtenerUsuarioPorNombre(@Path("nombre_usuario") String nombreUsuario, @Header("x-token") String token);
 
         @PUT("api/medidietas/usuarios/{nombre_usuario}")
-        Call<JsonObject> actualizarUsuario(@Path("nombre_usuario") String nombreUsuario, @Header("Authorization") String token, @Body JsonObject usuario);
+        Call<JsonObject> actualizarUsuario(@Path("nombre_usuario") String nombreUsuario, @Header("x-token") String token, @Body JsonObject usuarioJson);
 
         @GET("api/medidietas/alimentos")
         Call<JsonArray> obtenerAlimentos(@Header("x-token") String token);

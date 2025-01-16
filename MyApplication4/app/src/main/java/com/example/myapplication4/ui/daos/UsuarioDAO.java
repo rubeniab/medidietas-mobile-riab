@@ -1,5 +1,15 @@
 package com.example.myapplication4.ui.daos;
 
+<<<<<<< Updated upstream
+=======
+import static androidx.core.content.ContextCompat.startActivity;
+
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+>>>>>>> Stashed changes
 import android.util.Log;
 
 import com.example.myapplication4.ui.Utilidades.ApiService;
@@ -11,6 +21,7 @@ import com.example.myapplication4.RegistrarObjetivos;
 import com.example.myapplication4.ui.perfil.Usuario;
 import com.google.gson.JsonObject;
 
+import java.util.Base64;
 import java.util.HashMap;
 
 import retrofit2.Callback;
@@ -47,13 +58,17 @@ public class UsuarioDAO {
                 Constantes.APELLIDO_MATERNO = usuarioJson.get("apellido_materno").getAsString();
                 Constantes.NOMBRE_USUARIO = usuarioJson.get("nombre_usuario").getAsString();
                 Constantes.CORREO = usuarioJson.get("correo").getAsString();
+                Constantes.FOTO = usuarioJson.get("foto").getAsString();
 
                 if (usuarioJson.has("objetivo")) {
                     JsonObject objetivoJson = usuarioJson.getAsJsonObject("objetivo");
 
                     Log.d("UsuarioDAO", "Contenido de 'objetivo': " + objetivoJson.toString());
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
                     try {
                         Constantes.CALORIAS = objetivoJson.get("calorias").getAsDouble();
                         Constantes.CARBOHIDRATOS = objetivoJson.get("carbohidratos").getAsDouble();
@@ -167,6 +182,7 @@ public class UsuarioDAO {
         });
     }
 
+<<<<<<< Updated upstream
     public static void actualizarUsuario(UsuarioMovil usuario, String token, final Callback<JsonObject> callback) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("nombre", usuario.getNombre());
@@ -184,30 +200,66 @@ public class UsuarioDAO {
 
 
     /*public static HashMap<String, Object> actualizarUsuario(String nombreUsuario, UsuarioMovil usuario) {
+=======
+    public static String guardarFotoPerfil(String nombreUsuario, String extension, String imagen) throws Exception {
+        ProfileImageServiceGrpc.ProfileImageServiceBlockingStub stub =
+                ProfileImageServiceGrpc.newBlockingStub(ManagedChannelBuilder.
+                        forAddress(Constantes.IP, Constantes.PUERTO_API_GRPC_DOCKER).usePlaintext().build());
+
+        ImageService.UploadImageRequest solicitud = ImageService.UploadImageRequest.newBuilder()
+                .setName(nombreUsuario)
+                .setExtension(extension)
+                .setImageData(imagen)
+                .build();
+
+        ImageService.UploadFileResponse respuesta = stub.uploadProfileImage(solicitud);
+
+        System.out.println(respuesta.getImageName());
+        return respuesta.getImageName();
+    }
+
+    public static HashMap<String, Object> modificarPerfil(Context context, String nombreUsuario, String nombre, String apellidoPaterno, String apellidoMaterno, String correo) {
+>>>>>>> Stashed changes
         HashMap<String, Object> respuesta = new HashMap<>();
         respuesta.put("error", true);
-
         try {
-            // Obtener el token
             String token = GestorToken.TOKEN;
+            Log.d("modificarPerfil", "Token:" + token);
             if (token == null || token.isEmpty()) {
                 throw new Exception("Token no válido");
             }
 
-            // Realizar la llamada PUT
-            Call<JsonObject> call = ApiService.getService().actualizarUsuario(nombreUsuario, token, usuario);
+            JsonObject usuarioJson = new JsonObject();
+            usuarioJson.addProperty("nombre_usuario", nombreUsuario);
+            usuarioJson.addProperty("nombre", nombre);
+            usuarioJson.addProperty("apellido_paterno", apellidoPaterno);
+            usuarioJson.addProperty("apellido_materno", apellidoMaterno);
+            usuarioJson.addProperty("correo", correo);
+
+            //Llamar al servicio API para modificar perfil
+            Call<JsonObject> call = ApiService.getService().actualizarUsuario(nombreUsuario, token, usuarioJson);
             Response<JsonObject> response = call.execute();
 
+            Log.d("modificarPerfil", "Código de respuesta: " + response.code());
+            Log.d("modificarPerfil", "Cuerpo de respuesta: " + (response.body() != null ? response.body().toString() : "null"));
+
             if (response.isSuccessful() && response.body() != null) {
-                JsonObject usuarioJson = response.body();
                 respuesta.put("error", false);
-                respuesta.put("objeto", usuarioJson);
+                respuesta.put("mensaje", "Perfil modificado correctamente");
             } else {
-                respuesta.put("mensaje", "Error al actualizar el usuario");
+                String errorBody = response.errorBody() != null
+                        ? response.errorBody().string() : "Cuerpo de error vacío";
+                respuesta.put("mensaje", "Error al modificar el perfil. " +
+                        "Código de respuesta: " + response.code() + ", Cuerpo de error: " + errorBody);
             }
         } catch (Exception e) {
             respuesta.put("mensaje", "Error: " + e.getMessage());
+            Log.e("PerfilError", e.getMessage(), e);
         }
         return respuesta;
-    }*/
+    }
+
+
+
+
 }

@@ -33,6 +33,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+<<<<<<< Updated upstream
+=======
+
+        // Configuración de la vista
+>>>>>>> Stashed changes
         TextInputEditText correo = findViewById(R.id.correo);
         TextInputEditText contrasena = findViewById(R.id.contrasena);
         Button btnSesion = findViewById(R.id.btnSesion);
@@ -80,15 +85,36 @@ public class LoginActivity extends AppCompatActivity {
         mostrarProgressDialog();
 
         new Thread(() -> {
+<<<<<<< Updated upstream
             HashMap<String, Object> respuesta = UsuarioDAO.logIn(correo, contrasena, LoginActivity.this);
+=======
+            HashMap<String, Object> respuesta;
+            try {
+                respuesta = UsuarioDAO.logIn(correo, contrasena, LoginActivity.this);
+            } catch (Exception e) {
+                Log.e(TAG, "Error al conectar con la API: ", e);
+                respuesta = new HashMap<>();
+                respuesta.put("error", true);
+                respuesta.put("mensaje", "No se pudo conectar con el servidor. Por favor, verifica tu conexión.");
+            }
+>>>>>>> Stashed changes
 
+            HashMap<String, Object> finalRespuesta = respuesta;
             runOnUiThread(() -> {
+<<<<<<< Updated upstream
                 ocultarProgressDialog();
 
                 if ((boolean) respuesta.get("error")) {
                     String mensaje = (String) respuesta.getOrDefault("mensaje", "Error desconocido");
                     Toast.makeText(LoginActivity.this, mensaje, Toast.LENGTH_SHORT).show();
+=======
+                if ((boolean) finalRespuesta.get("error")) {
+                    actualizarProgressDialogMensaje("No se pudo conectar con el servidor. Verifica tu conexión.");
+                    // Mantener el ProgressDialog visible unos segundos antes de ocultarlo
+                    new android.os.Handler().postDelayed(this::ocultarProgressDialog, 3000);
+>>>>>>> Stashed changes
                 } else {
+                    ocultarProgressDialog();
                     obtenerIdUsuario();
                 }
             });
@@ -96,15 +122,27 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void obtenerIdUsuario() {
+        mostrarProgressDialog();
         new Thread(() -> {
-            HashMap<String, Object> respuesta = UsuarioDAO.consultarUsuario(Constantes.NOMBRE_USUARIO);
+            HashMap<String, Object> respuesta;
+            try {
+                respuesta = UsuarioDAO.consultarUsuario(Constantes.NOMBRE_USUARIO);
+            } catch (Exception e) {
+                Log.e(TAG, "Error al obtener datos del usuario: ", e);
+                respuesta = new HashMap<>();
+                respuesta.put("error", true);
+                respuesta.put("mensaje", "No se pudo conectar con el servidor. Por favor, intenta nuevamente.");
+            }
 
+            HashMap<String, Object> finalRespuesta = respuesta;
             runOnUiThread(() -> {
-                if ((boolean) respuesta.get("error")) {
-                    String mensaje = (String) respuesta.getOrDefault("mensaje", "Error desconocido");
-                    Toast.makeText(LoginActivity.this, mensaje, Toast.LENGTH_SHORT).show();
+                if ((boolean) finalRespuesta.get("error")) {
+                    actualizarProgressDialogMensaje("No se pudo conectar con el servidor. Intenta nuevamente.");
+                    // Mantener el ProgressDialog visible unos segundos antes de ocultarlo
+                    new android.os.Handler().postDelayed(this::ocultarProgressDialog, 3000);
                 } else {
-                    Usuario usuario = (Usuario) respuesta.get("objeto");
+                    ocultarProgressDialog();
+                    Usuario usuario = (Usuario) finalRespuesta.get("objeto");
                     if (usuario != null) {
                         Constantes.ID_USUARIO = usuario.getId();
                         Log.d(TAG, "ID del usuario: " + Constantes.ID_USUARIO);
@@ -115,6 +153,11 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         }).start();
+    }
+    private void actualizarProgressDialogMensaje(String mensaje) {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.setMessage(mensaje);
+        }
     }
 
     public void navigateToNextActivity() {

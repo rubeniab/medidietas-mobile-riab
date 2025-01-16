@@ -7,8 +7,18 @@ public class Constantes {
     public static String NOMBRE;
     public static String APELLIDO_PATERNO;
     public static String APELLIDO_MATERNO;
+    public static String FOTO;
     public static double CALORIAS;
     public static double CARBOHIDRATOS;
     public static double GRASAS;
     public static double PROTEINAS;
+<<<<<<< Updated upstream
+=======
+
+    public static final String IP = "10.0.2.2";
+    public static final String PUERTO_API_REST_DOCKER = "8081";
+    public static final String PUERTO_API_REST_LOCAL = "8086";
+    public static final int PUERTO_API_GRPC_DOCKER = 50052;
+    public static final int PUERTO_API_GRPC_LOCAL = 50051;
+>>>>>>> Stashed changes
 }

@@ -56,5 +56,17 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+<<<<<<< Updated upstream
+=======
+
+    implementation("io.grpc:grpc-okhttp:1.68.1")
+    implementation("io.grpc:grpc-protobuf-lite:1.68.1")
+    implementation("io.grpc:grpc-stub:1.68.1")
+    compileOnly("org.apache.tomcat:annotations-api:6.0.53")
+
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+
+>>>>>>> Stashed changes
 }
 

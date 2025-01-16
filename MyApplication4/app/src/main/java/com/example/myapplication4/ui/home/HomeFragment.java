@@ -15,6 +15,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.ProgressDialog;
+
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -66,6 +68,8 @@ public class HomeFragment extends Fragment {private TableLayout tableLayout;
     private double grasasTotales = 0;
     private double grasasConsumidas = 0;
     private double grasasRestantes = 0;
+    private ProgressDialog progressDialog;
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -78,6 +82,11 @@ public class HomeFragment extends Fragment {private TableLayout tableLayout;
 
         tableLayout = binding.tableLayout;
 
+        ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Cargando...");
+        progressDialog.setCancelable(false);  // Opcional: para evitar que se cierre tocando fuera
+        progressDialog.show();
+
         new Thread(() -> {
             obtenerObjetivos();
             obtenerConsumos();
@@ -85,6 +94,7 @@ public class HomeFragment extends Fragment {private TableLayout tableLayout;
             calcularConsumos();
 
             getActivity().runOnUiThread(() -> {
+                progressDialog.dismiss();
                 cargarTabla();
                 actualizarGraficas();
             });
@@ -192,9 +202,12 @@ public class HomeFragment extends Fragment {private TableLayout tableLayout;
             double nuevaCantidad = Double.parseDouble(cantidadEditText.getText().toString());
             int nuevoIdMomento = momentosList.get(momentoSpinner.getSelectedItemPosition()).getId();
 
+            progressDialog.show();
+
             new Thread(() -> {
                 HashMap<String, Object> respuesta = ConsumoDAO.modificarConsumo(getContext(), consumo.getId(), nuevaCantidad, nuevoIdMomento);
                 getActivity().runOnUiThread(() -> {
+                    progressDialog.dismiss();
                     if (!(boolean) respuesta.get("error")) {
                         Toast.makeText(getContext(), "Consumo modificado correctamente", Toast.LENGTH_SHORT).show();
                         new Thread(() -> {
